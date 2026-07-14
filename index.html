@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Inspeção Predial">
+<meta name="theme-color" content="#152F44">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAAEmklEQVR4nO3cwVHkQAxGYbFFCsSxSWwYnDkQEAfOBLqHraJcw9jr8S+ppe73BcAM7kdbzYCfXn7/MeCqX6PfAHojIEgICBICgoSAICEgSAgIEgKChIAgISBICAgSAoKEgCAhIEgICBICgoSAICEgSAgIEgKChIAgISBICAiS5/yXfP98zX/RdXy8fWW+3FPaPxbSTbKckjICIp2BojMKn4GoZ6zo6x8bEPVUELoKgQFRTx1xaxE1Ax2/4+STwjryL3tIQHvfBt2kSVsC/1sY9VSwd7Xd72XOAVFPHTkNZXyUQT2jJFx5z4Dupk09Y929/o6bUOwORD0VhK4Cn8ZD4hYQvzbsxWu9Ancg7l91xK0FtzBICAgSAoKEgCAhIEgICBICgoSAICEgSAgIEgKChIAgISBICAgSAoKEgCAhIEgICBICqqjRH5gTUDn/6unSEAHVsu2mRUMEVNr752vxjAiokL1WKjdEQFUcV1K2IQIq4UwfNRsioPHOl1FwJCKgwS4EUaohAuqn1EMHCGikC3tJqXqMgAaaoB4joFFKzTEKAhrgWj0Ftx8joHwz1WME1ELZeoyAks0xOG8RUJ756jECSjPNsesGAWWYbHDeIqBwE9djBFRTl3qMgKJNOThvEVCg6esxAooz67HrBgGFmHtw3iIgf+vUYwRURNN6jIDcrTA4bxGQp9XqMQJytMix6wYB+VhqcN4iIAfL1mMENMoc9RgB6RYcnLcISLJ4PUZAijWPXTcI6KKVB+et3gGN2gOo51vjgHo9zXTKeqxvQAOfZsrgvNUyoJ9LmNYQ9dzoF9DAR5l2uV1mahbQwEeZMjjf1SmggY8ypZ49bQJ66FGmoe/kpBXqsS4BPdqEb0MMzgcaBHStBq+GqOdYg4Aur4feUJG7YWUNArJBDTE4n9EjIEtviHpOahOQDb2XnbFgPdYrIMtaJAbn85oFZFeXKvTXSMvWYx0DssiGOHY9qmVAFtMQg/MFXQMy74ao55rGAVn8PBTx6pPpHZA5NcTgfFn7gExuiHoUMwRkQkMcu0STBGSJuwLbz9Y8AeWgnhtTBRS9utTz01QBWeQaU89dswVkMStNPXsmDMhY70RzBmSuDZHjgWkDMqeFp55jMwdk8vJTz39NHpAJEVDPGfMHZJdSoJ6TlgjICCLMKgHZIw1R23kLBWTnyqCeh6wVkB328fH2RT2PWi4g2wmFdK55Hv0GhqEYFyvuQHBEQJAQECQEBAkBQUJAkBAQJAQECQFBQkCQEBAkBAQJAUFCQJAQECQEBAkBQUJAkAQGxOMH64hbC7eA+BPjXrzWi1sYJLEBcRerIHQVPAO6uyvS0Fh3r7/jvJFxC6OhURKuvHNAe2nTUL69a+573PHfgWiogpx6zOzp5fcf36/4z3EunPmD5F/2qICMLaeYoB/awCGabaaOuLWIPYXRUAWhqxB+jKehsaKvf+AMdIORKFnOj25eQN8oKVTylj8gIMyET+MhISBICAgSAoKEgCAhIEgICBICgoSAICEgSAgIEgKChIAgISBICAgSAoKEgCAhIEgICBICgoSAICEgSP4CgqGGWuTVEC4AAAAASUVORK5CYII=">
+<title>Checklist de Inspeção Predial</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+
+:root{
+  --bg:#EEF1EF;
+  --paper:#FFFFFF;
+  --ink:#16232E;
+  --ink-soft:#5B6B74;
+  --primary:#234E70;
+  --primary-dark:#152F44;
+  --ok:#3A7D5C;
+  --ok-bg:#E3F0E9;
+  --alert:#AE3B2E;
+  --alert-bg:#F7E6E2;
+  --warn:#B5822A;
+  --warn-bg:#FBF0DB;
+  --line:#DBE1DD;
+  --radius:12px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'IBM Plex Sans',sans-serif;
+  padding-bottom:100px;
+  -webkit-tap-highlight-color:transparent;
+}
+h1,h2,h3{
+  font-family:'Source Serif 4',serif;
+  margin:0;
+}
+.tag{
+  font-family:'IBM Plex Mono',monospace;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+}
+
+/* HEADER */
+header{
+  background:var(--primary-dark);
+  color:#fff;
+  padding:18px 18px 22px;
+  position:sticky;
+  top:0;
+  z-index:20;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
+}
+header .eyebrow{
+  font-size:11px;
+  color:#9FC0D6;
+  margin-bottom:2px;
+}
+header h1{
+  font-size:20px;
+  font-weight:700;
+  color:#fff;
+}
+.progress-wrap{
+  margin-top:14px;
+}
+.progress-bar{
+  height:6px;
+  background:rgba(255,255,255,.18);
+  border-radius:4px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:#7FC9A0;
+  border-radius:4px;
+  transition:width .3s ease;
+}
+.progress-label{
+  font-size:11px;
+  color:#B7CCD8;
+  margin-top:6px;
+  display:flex;
+  justify-content:space-between;
+}
+
+/* UNIT INFO */
+.unit-card{
+  background:var(--paper);
+  margin:14px;
+  border-radius:var(--radius);
+  padding:16px;
+  border:1px solid var(--line);
+}
+.unit-card h2{
+  font-size:15px;
+  color:var(--primary-dark);
+  margin-bottom:10px;
+}
+.field-row{margin-bottom:10px;}
+.field-row label{
+  display:block;
+  font-size:11px;
+  color:var(--ink-soft);
+  margin-bottom:4px;
+  font-family:'IBM Plex Mono',monospace;
+  letter-spacing:.02em;
+}
+.field-row input, .field-row textarea{
+  width:100%;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  font-family:inherit;
+  font-size:14px;
+  background:#FBFCFB;
+  color:var(--ink);
+}
+.field-row input:focus, .field-row textarea:focus{
+  outline:2px solid var(--primary);
+  outline-offset:1px;
+  background:#fff;
+}
+
+/* SECTIONS */
+.section{
+  margin:14px;
+  border-radius:var(--radius);
+  background:var(--paper);
+  border:1px solid var(--line);
+  overflow:hidden;
+}
+.section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  cursor:pointer;
+  background:#fff;
+}
+.section-head .num{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  color:var(--primary);
+  background:#E8EFF3;
+  padding:3px 8px;
+  border-radius:6px;
+  margin-right:10px;
+}
+.section-head h2{
+  font-size:15px;
+  flex:1;
+  color:var(--ink);
+}
+.section-count{
+  font-size:11px;
+  color:var(--ink-soft);
+  font-family:'IBM Plex Mono',monospace;
+  margin-right:8px;
+}
+.chevron{
+  transition:transform .25s ease;
+  color:var(--ink-soft);
+}
+.section.open .chevron{transform:rotate(90deg);}
+.section-body{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .3s ease;
+  border-top:1px solid transparent;
+}
+.section.open .section-body{
+  border-top:1px solid var(--line);
+}
+
+/* ITEMS */
+.item{
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
+}
+.item:last-child{border-bottom:none;}
+.item .question{
+  font-size:14px;
+  line-height:1.4;
+  margin-bottom:10px;
+}
+.stamp-row{
+  display:flex;
+  gap:8px;
+  margin-bottom:10px;
+  flex-wrap:wrap;
+}
+.stamp{
+  flex:1;
+  min-width:80px;
+  padding:10px 6px;
+  border-radius:8px;
+  border:2px solid var(--line);
+  background:#fff;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+  cursor:pointer;
+  transition:transform .12s ease, box-shadow .12s ease;
+  position:relative;
+}
+.stamp:active{transform:scale(.96);}
+.stamp.sel-sim{
+  border-color:var(--ok);
+  color:var(--ok);
+  background:var(--ok-bg);
+  transform:rotate(-1.5deg);
+  box-shadow:0 0 0 3px rgba(58,125,92,.12);
+}
+.stamp.sel-nao{
+  border-color:var(--alert);
+  color:var(--alert);
+  background:var(--alert-bg);
+  transform:rotate(1.5deg);
+  box-shadow:0 0 0 3px rgba(174,59,46,.12);
+}
+.stamp.sel-prej{
+  border-color:var(--warn);
+  color:var(--warn);
+  background:var(--warn-bg);
+  transform:rotate(-1deg);
+  box-shadow:0 0 0 3px rgba(181,130,42,.12);
+}
+.item textarea{
+  width:100%;
+  min-height:44px;
+  padding:9px 10px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  font-family:inherit;
+  font-size:13px;
+  color:var(--ink);
+  background:#FBFCFB;
+  resize:vertical;
+}
+.item textarea:focus{outline:2px solid var(--primary); outline-offset:1px; background:#fff;}
+.item textarea::placeholder{color:#A6B1B7;}
+.extra-field{margin-top:8px;}
+.extra-field input{
+  width:100%;
+  padding:8px 10px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  font-size:13px;
+  font-family:inherit;
+}
+
+/* PHOTO */
+.photo-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-top:10px;
+  flex-wrap:wrap;
+}
+.photo-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 12px;
+  border-radius:8px;
+  background:var(--primary);
+  color:#fff;
+  border:none;
+  font-size:12px;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-weight:500;
+  cursor:pointer;
+}
+.photo-thumb{
+  width:52px;height:52px;
+  border-radius:6px;
+  object-fit:cover;
+  border:1px solid var(--line);
+}
+.photo-check-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 16px;
+  border-bottom:1px solid var(--line);
+}
+.photo-check-item:last-child{border-bottom:none;}
+.photo-check-item .label{flex:1; font-size:13px;}
+.photo-check-item .thumb-empty{
+  width:52px;height:52px;
+  border-radius:6px;
+  border:1.5px dashed var(--line);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--ink-soft);
+  font-size:10px;
+}
+
+/* TEXT-ONLY ITEM */
+.text-item .question{margin-bottom:8px;}
+
+/* FOOTER BAR */
+.footer-bar{
+  position:fixed;
+  bottom:0; left:0; right:0;
+  background:#fff;
+  border-top:1px solid var(--line);
+  padding:10px 14px;
+  display:flex;
+  gap:10px;
+  z-index:30;
+  box-shadow:0 -2px 10px rgba(0,0,0,.08);
+}
+.footer-btn{
+  flex:1;
+  padding:12px;
+  border-radius:9px;
+  border:none;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-weight:600;
+  font-size:13px;
+  cursor:pointer;
+}
+.footer-btn.primary{background:var(--primary); color:#fff;}
+.footer-btn.ghost{background:#F1F3F2; color:var(--ink);}
+
+/* REPORT MODAL */
+.modal-overlay{
+  position:fixed; inset:0;
+  background:rgba(21,47,68,.55);
+  z-index:50;
+  display:none;
+  align-items:flex-end;
+}
+.modal-overlay.show{display:flex;}
+.modal{
+  background:#fff;
+  width:100%;
+  max-height:85vh;
+  border-radius:16px 16px 0 0;
+  padding:18px;
+  overflow-y:auto;
+}
+.modal h2{font-size:16px; margin-bottom:10px; color:var(--primary-dark);}
+.modal pre{
+  white-space:pre-wrap;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:11.5px;
+  line-height:1.6;
+  background:#F7F8F6;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px;
+  color:var(--ink);
+}
+.modal-actions{display:flex; gap:8px; margin-top:12px;}
+.modal-actions button{
+  flex:1; padding:11px; border-radius:8px; border:none; font-weight:600; font-size:13px; cursor:pointer;
+}
+.save-indicator{
+  font-size:10px;
+  color:#B7CCD8;
+  text-align:right;
+  margin-top:4px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow tag">Corregedoria &middot; Inspeção Predial</div>
+  <h1 id="unit-title">Novo checklist</h1>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="progress-label">
+      <span id="progress-text">0 de 0 itens respondidos</span>
+      <span id="save-indicator">salvo</span>
+    </div>
+  </div>
+</header>
+
+<div class="unit-card">
+  <h2 class="tag">Dados da unidade visitada</h2>
+  <div class="field-row"><label>Comarca</label><input id="f-comarca" placeholder="Ex: São Domingos do Norte"></div>
+  <div class="field-row"><label>Nome oficial do fórum</label><input id="f-nome" placeholder="Ex: Des. José de Barros Wanderley"></div>
+  <div class="field-row"><label>Endereço completo</label><textarea id="f-endereco" rows="2" placeholder="Rod. ES 080, Km 44..."></textarea></div>
+  <div class="field-row"><label>Juiz Diretor do Foro</label><input id="f-juiz"></div>
+  <div class="field-row"><label>Secretário(a) de gestão do Foro</label><input id="f-secretario"></div>
+  <div class="field-row"><label>Servidores</label><input id="f-servidores"></div>
+  <div class="field-row"><label>Data da visita</label><input id="f-data" type="date"></div>
+</div>
+
+<div id="sections"></div>
+
+<div class="section" id="photo-section">
+  <div class="section-head" onclick="toggleSection('photo-section')">
+    <span class="num">FOTO</span>
+    <h2>Relatório fotográfico</h2>
+    <span class="section-count" id="photo-count">0/12</span>
+    <span class="chevron">›</span>
+  </div>
+  <div class="section-body" id="photo-body"></div>
+</div>
+
+<div class="footer-bar">
+  <button class="footer-btn ghost" onclick="confirmReset()">Nova visita</button>
+  <button class="footer-btn primary" onclick="openReport()">Gerar relatório</button>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <h2>Resumo da inspeção</h2>
+    <pre id="report-text"></pre>
+    <div class="modal-actions">
+      <button style="background:#F1F3F2;color:var(--ink);" onclick="closeReport()">Fechar</button>
+      <button style="background:var(--primary);color:#fff;" onclick="copyReport()">Copiar texto</button>
+      <button style="background:var(--ok);color:#fff;" onclick="window.print()">Imprimir / PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STAMP_LABELS_DEFAULT = ['Sim','Não','Prejudicado'];
+const STAMP_LABELS_ACESSO = ['Comum','Segregado','Prejudicado'];
+
+const SECTIONS = [
+  { id:'s1', num:'01', title:'Infraestrutura e Conservação (Estado Físico)', items:[
+    { id:'i1', q:'Fachada e Identificação: pintura em dia? Nome do fórum visível?', type:'stamp' },
+    { id:'i2', q:'Piso e Paredes: há rachaduras, infiltrações, mofo ou azulejos soltos?', type:'stamp' },
+    { id:'i3', q:'Teto e Cobertura: sinais de goteiras, manchas de umidade ou forro caído?', type:'stamp' },
+    { id:'i4', q:'Esquadrias: janelas e portas abrem/fecham corretamente? Vidros quebrados?', type:'stamp' },
+    { id:'i5', q:'Mobiliário: mesas e cadeiras em bom estado? Armários adequados?', type:'stamp' },
+    { id:'i6', q:'Sustentabilidade: placas solares operantes?', type:'stamp' },
+    { id:'i7', q:'Lixeiras de coleta seletiva?', type:'stamp' },
+    { id:'i8', q:'Manutenção SEI: existem números de chamados anotados para reparos urgentes?', type:'stamp', extra:{label:'Números dos chamados', showOn:'Sim'} },
+  ]},
+  { id:'s2', num:'02', title:'Acessibilidade (Res. CNJ 401/2021 e 41/2023)', items:[
+    { id:'i9', q:'Rampas e Elevadores: acesso autônomo da calçada até o interior? Elevador funcionando?', type:'stamp' },
+    { id:'i10', q:'Estacionamento: vagas para idosos e PcD devidamente demarcadas e próximas à entrada?', type:'stamp' },
+    { id:'i11', q:'Sanitários: há banheiros adaptados para PcD em todos os pavimentos de atendimento? Masculino e feminino?', type:'stamp' },
+    { id:'i12', q:'Dignidade no Acesso: o fluxo de PcD é comum ao público ou é segregado por entradas de serviço?', type:'stamp', labels:STAMP_LABELS_ACESSO },
+    { id:'i13', q:'Animais de Assistência: há vedação de entrada (cão-guia)? Portaria tratando sobre o tema?', type:'stamp' },
+  ]},
+  { id:'s3', num:'03', title:'Segurança Institucional (Res. CNJ 435/2021)', items:[
+    { id:'i14', q:'Pórtico/Metais: detector de metais instalado e com vigilante operando?', type:'stamp' },
+    { id:'i15', q:'Identificação: cadastro de visitantes com foto e entrega de crachás?', type:'stamp' },
+    { id:'i16', q:'Monitoramento: câmeras (CFTV) cobrindo áreas comuns e corredores?', type:'stamp' },
+    { id:'i17', q:'Policiamento: presença de segurança privada e/ou policial militar no local?', type:'stamp' },
+    { id:'i18', q:'Fluxo de Presos: entrada de viaturas é isolada do público? Há contato visual entre presos e vítimas nos corredores?', type:'stamp' },
+  ]},
+  { id:'s4', num:'04', title:'Áreas de Apoio e Operacional', items:[
+    { id:'i19', q:'Arquivo: espaço ventilado? Caixas organizadas e fora do chão (risco de alagamento)?', type:'stamp' },
+    { id:'i20', q:'Sala Passiva: espaço exclusivo para o "excluído digital" realizar atos virtuais?', type:'stamp' },
+    { id:'i21', q:'Sala Passiva: o agendamento é feito por meio do Google Agenda?', type:'stamp' },
+    { id:'i22', q:'Copa/Cozinha: condições de higiene e conservação dos eletrodomésticos e armários.', type:'stamp' },
+    { id:'i23', q:'Servidora responsável pela gestão do foro', type:'text', placeholder:'Nome' },
+  ]},
+  { id:'s5', num:'05', title:'Pessoal', items:[
+    { id:'i27', q:'Quem monitora os trabalhos dos oficiais de justiça?', type:'text', placeholder:'Nome' },
+    { id:'i28', q:'Controle de mandados distribuídos — como é feito?', type:'text', placeholder:'Descrição' },
+    { id:'i29', q:'Último levantamento bimestral (art. 515, XI) — via SEI?', type:'text', placeholder:'Observações' },
+    { id:'i30', q:'Pasta de controle de comparecimento dos oficiais (art. 511, XIII)', type:'text', placeholder:'Observações' },
+    { id:'i31', q:'Expedientes disciplinares em curso (Provimento Conjunto TJES nº 1/2021) — tempo de tramitação', type:'text', placeholder:'Observações' },
+    { id:'i32', q:'Cadastramento de bens apreendidos no SNGB — há bens pendentes de destinação?', type:'text', placeholder:'Observações' },
+    { id:'i33', q:'Há armas de fogo pendentes de destinação ou destruição?', type:'text', placeholder:'Observações' },
+  ]},
+];
+
+const PHOTO_ITEMS = [
+  'Fachada com o nome do Fórum','Calçada e vagas, mostrando acessibilidade','Entrada (catraca, pórtico, etc.)',
+  'Rampas e/ou elevadores','Banheiros','Arquivo','Sala passiva','Bens apreendidos','Armas apreendidas',
+  'Placas solares','CFTV','SEI e chamados de achados anteriores (digitalizar)'
+];
+
+let state = {
+  unit:{ comarca:'', nome:'', endereco:'', juiz:'', secretario:'', servidores:'', data:'' },
+  answers:{},   // itemId -> { stamp, obs, extra }
+  photos:{}     // photoLabel -> count (in-memory only per session)
+};
+let saveTimer = null;
+
+function countAnswerable(){
+  let total=0, done=0;
+  SECTIONS.forEach(s=>s.items.forEach(it=>{
+    total++;
+    const a = state.answers[it.id];
+    if(it.type==='stamp' && a && a.stamp) done++;
+    if(it.type==='text' && a && a.obs && a.obs.trim()) done++;
+  }));
+  return {total, done};
+}
+
+function updateProgress(){
+  const {total, done} = countAnswerable();
+  const pct = total ? Math.round(done/total*100) : 0;
+  document.getElementById('progress-fill').style.width = pct+'%';
+  document.getElementById('progress-text').textContent = `${done} de ${total} itens respondidos`;
+  const title = state.unit.nome ? `Fórum ${state.unit.nome}` : (state.unit.comarca || 'Novo checklist');
+  document.getElementById('unit-title').textContent = title;
+}
+
+function renderSections(){
+  const root = document.getElementById('sections');
+  root.innerHTML = '';
+  SECTIONS.forEach(sec=>{
+    const secEl = document.createElement('div');
+    secEl.className = 'section';
+    secEl.id = sec.id;
+    const answeredInSec = sec.items.filter(it=>{
+      const a = state.answers[it.id];
+      return (it.type==='stamp' && a && a.stamp) || (it.type==='text' && a && a.obs && a.obs.trim());
+    }).length;
+    secEl.innerHTML = `
+      <div class="section-head" onclick="toggleSection('${sec.id}')">
+        <span class="num">${sec.num}</span>
+        <h2>${sec.title}</h2>
+        <span class="section-count">${answeredInSec}/${sec.items.length}</span>
+        <span class="chevron">›</span>
+      </div>
+      <div class="section-body"><div style="padding:0;">${sec.items.map(renderItem).join('')}</div></div>
+    `;
+    root.appendChild(secEl);
+  });
+}
+
+function renderItem(it){
+  const a = state.answers[it.id] || {};
+  if(it.type==='text'){
+    return `
+      <div class="item text-item">
+        <div class="question">${it.q}</div>
+        <textarea placeholder="${it.placeholder||'Observações'}" oninput="setText('${it.id}', this.value)">${a.obs||''}</textarea>
+      </div>
+    `;
+  }
+  const labels = it.labels || STAMP_LABELS_DEFAULT;
+  const keys = ['sim','nao','prej'];
+  const stampsHtml = labels.map((lab,i)=>{
+    const key = keys[i];
+    const sel = a.stamp===lab ? `sel-${key}` : '';
+    return `<button type="button" class="stamp ${sel}" onclick="setStamp('${it.id}','${lab.replace(/'/g,"\\'")}')">${lab}</button>`;
+  }).join('');
+  const showExtra = it.extra && a.stamp === it.extra.showOn;
+  const extraHtml = it.extra ? `
+    <div class="extra-field" style="display:${showExtra?'block':'none'}" id="extra-${it.id}">
+      <input placeholder="${it.extra.label}" value="${a.extra||''}" oninput="setExtra('${it.id}', this.value)">
+    </div>` : '';
+  return `
+    <div class="item">
+      <div class="question">${it.q}</div>
+      <div class="stamp-row">${stampsHtml}</div>
+      ${extraHtml}
+      <textarea placeholder="Observações" oninput="setText('${it.id}', this.value)">${a.obs||''}</textarea>
+    </div>
+  `;
+}
+
+function renderPhotos(){
+  const body = document.getElementById('photo-body');
+  body.innerHTML = PHOTO_ITEMS.map((label,idx)=>{
+    const count = state.photos[label] || 0;
+    const thumb = count>0
+      ? `<div style="position:relative;">
+           <div style="width:52px;height:52px;border-radius:6px;background:var(--ok-bg);border:1px solid var(--ok);display:flex;align-items:center;justify-content:center;color:var(--ok);font-size:18px;">✓</div>
+         </div>`
+      : `<div class="thumb-empty">sem foto</div>`;
+    return `
+      <div class="photo-check-item">
+        <div class="label">${label}</div>
+        ${thumb}
+        <input type="file" accept="image/*" capture="environment" id="file-${idx}" style="display:none" onchange="onPhoto('${label.replace(/'/g,"\\'")}', ${idx})">
+        <button class="photo-btn" onclick="document.getElementById('file-${idx}').click()">${count>0? 'Refazer':'Câmera'}</button>
+      </div>
+    `;
+  }).join('');
+  const totalPhotos = Object.values(state.photos).filter(c=>c>0).length;
+  document.getElementById('photo-count').textContent = `${totalPhotos}/${PHOTO_ITEMS.length}`;
+}
+
+function onPhoto(label, idx){
+  const input = document.getElementById(`file-${idx}`);
+  if(input.files && input.files[0]){
+    state.photos[label] = 1;
+    renderPhotos();
+    scheduleSave();
+  }
+}
+
+function setStamp(itemId, label){
+  state.answers[itemId] = state.answers[itemId] || {};
+  state.answers[itemId].stamp = state.answers[itemId].stamp === label ? null : label;
+  renderSections();
+  reopenAll();
+  updateProgress();
+  scheduleSave();
+}
+function setText(itemId, val){
+  state.answers[itemId] = state.answers[itemId] || {};
+  state.answers[itemId].obs = val;
+  updateProgress();
+  scheduleSave();
+}
+function setExtra(itemId, val){
+  state.answers[itemId] = state.answers[itemId] || {};
+  state.answers[itemId].extra = val;
+  scheduleSave();
+}
+
+let openSections = new Set(['s1']);
+function toggleSection(id){
+  if(openSections.has(id)) openSections.delete(id); else openSections.add(id);
+  applyOpenState();
+}
+function reopenAll(){ applyOpenState(); }
+function applyOpenState(){
+  document.querySelectorAll('.section').forEach(el=>{
+    const body = el.querySelector('.section-body');
+    if(openSections.has(el.id)){
+      el.classList.add('open');
+      body.style.maxHeight = body.scrollHeight + 40 + 'px';
+    } else {
+      el.classList.remove('open');
+      body.style.maxHeight = '0px';
+    }
+  });
+}
+
+['comarca','nome','endereco','juiz','secretario','servidores','data'].forEach(key=>{
+  const el = document.getElementById('f-'+key);
+  el.addEventListener('input', ()=>{
+    state.unit[key] = el.value;
+    updateProgress();
+    scheduleSave();
+  });
+});
+
+function scheduleSave(){
+  document.getElementById('save-indicator').textContent = 'salvando…';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    try{
+      localStorage.setItem('current-inspection', JSON.stringify(state));
+      document.getElementById('save-indicator').textContent = 'salvo neste aparelho';
+    }catch(e){
+      document.getElementById('save-indicator').textContent = 'erro ao salvar';
+    }
+  }, 500);
+}
+
+async function loadState(){
+  try{
+    const raw = localStorage.getItem('current-inspection');
+    if(raw){
+      const loaded = JSON.parse(raw);
+      state = Object.assign({unit:{},answers:{},photos:{}}, loaded);
+    }
+  }catch(e){ /* nothing saved yet */ }
+  ['comarca','nome','endereco','juiz','secretario','servidores','data'].forEach(key=>{
+    document.getElementById('f-'+key).value = state.unit[key] || '';
+  });
+  renderSections();
+  applyOpenState();
+  renderPhotos();
+  updateProgress();
+}
+
+async function confirmReset(){
+  if(confirm('Iniciar nova visita? Os dados atuais serão substituídos (o histórico local não é apagado, mas esta tela será limpa).')){
+    state = { unit:{comarca:'',nome:'',endereco:'',juiz:'',secretario:'',servidores:'',data:''}, answers:{}, photos:{} };
+    ['comarca','nome','endereco','juiz','secretario','servidores','data'].forEach(key=>{
+      document.getElementById('f-'+key).value = '';
+    });
+    renderSections();
+    applyOpenState();
+    renderPhotos();
+    updateProgress();
+    localStorage.setItem('current-inspection', JSON.stringify(state));
+  }
+}
+
+function buildReportText(){
+  const u = state.unit;
+  let lines = [];
+  lines.push('CHECKLIST DE INSPEÇÃO PREDIAL');
+  lines.push('='.repeat(32));
+  lines.push(`Comarca: ${u.comarca||'-'}`);
+  lines.push(`Fórum: ${u.nome||'-'}`);
+  lines.push(`Endereço: ${u.endereco||'-'}`);
+  lines.push(`Juiz Diretor do Foro: ${u.juiz||'-'}`);
+  lines.push(`Secretário(a) de gestão: ${u.secretario||'-'}`);
+  lines.push(`Servidores: ${u.servidores||'-'}`);
+  lines.push(`Data da visita: ${u.data||'-'}`);
+  lines.push('');
+  SECTIONS.forEach(sec=>{
+    lines.push(`${sec.num}. ${sec.title.toUpperCase()}`);
+    lines.push('-'.repeat(32));
+    sec.items.forEach(it=>{
+      const a = state.answers[it.id] || {};
+      if(it.type==='text'){
+        lines.push(`• ${it.q}`);
+        lines.push(`  Resposta: ${a.obs && a.obs.trim() ? a.obs : '(não preenchido)'}`);
+      } else {
+        lines.push(`• ${it.q}`);
+        lines.push(`  Situação: ${a.stamp || '(não respondido)'}${a.extra? ' — '+a.extra : ''}`);
+        if(a.obs && a.obs.trim()) lines.push(`  Obs: ${a.obs}`);
+      }
+    });
+    lines.push('');
+  });
+  lines.push('RELATÓRIO FOTOGRÁFICO');
+  lines.push('-'.repeat(32));
+  PHOTO_ITEMS.forEach(p=>{
+    lines.push(`[${state.photos[p] ? 'x' : ' '}] ${p}`);
+  });
+  return lines.join('\n');
+}
+
+function openReport(){
+  document.getElementById('report-text').textContent = buildReportText();
+  document.getElementById('modal-overlay').classList.add('show');
+}
+function closeReport(){
+  document.getElementById('modal-overlay').classList.remove('show');
+}
+function copyReport(){
+  const text = document.getElementById('report-text').textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    alert('Texto copiado.');
+  }).catch(()=>{
+    alert('Não foi possível copiar automaticamente. Selecione o texto manualmente.');
+  });
+}
+
+loadState();
+</script>
+</body>
+</html>
