@@ -722,7 +722,7 @@ function renderSections(){
       <div class="section-head" onclick="toggleSection('${sec.id}')">
         <span class="num">${sec.num}</span>
         <h2>${sec.title}</h2>
-        <span class="section-count">${answeredInSec}/${sec.items.length}</span>
+        <span class="section-count" id="count-${sec.id}">${answeredInSec}/${sec.items.length}</span>
         <span class="chevron">›</span>
       </div>
       <div class="section-body"><div style="padding:0;">${sec.items.map(renderItem).join('')}</div></div>
@@ -746,7 +746,7 @@ function renderItem(it){
   const stampsHtml = labels.map((lab,i)=>{
     const key = keys[i];
     const sel = a.stamp===lab ? `sel-${key}` : '';
-    return `<button type="button" class="stamp ${sel}" onclick="setStamp('${it.id}','${lab.replace(/'/g,"\\'")}')">${lab}</button>`;
+    return `<button type="button" class="stamp ${sel}" onclick="setStamp('${it.id}','${lab.replace(/'/g,"\\'")}', this)">${lab}</button>`;
   }).join('');
   const showExtra = it.extra && a.stamp === it.extra.showOn;
   let extraHtml = '';
@@ -805,11 +805,47 @@ function onPhoto(label, idx){
   }
 }
 
-function setStamp(itemId, label){
+function findItemById(id){
+  for(const sec of SECTIONS){
+    const it = sec.items.find(i=>i.id===id);
+    if(it) return it;
+  }
+  return null;
+}
+function findSectionByItemId(id){
+  return SECTIONS.find(sec=>sec.items.some(i=>i.id===id));
+}
+function updateSectionCount(itemId){
+  const sec = findSectionByItemId(itemId);
+  if(!sec) return;
+  const answeredInSec = sec.items.filter(it=>{
+    const a = state.answers[it.id];
+    return (it.type==='stamp' && a && a.stamp) || (it.type==='text' && a && a.obs && a.obs.trim());
+  }).length;
+  const countEl = document.getElementById(`count-${sec.id}`);
+  if(countEl) countEl.textContent = `${answeredInSec}/${sec.items.length}`;
+}
+
+function setStamp(itemId, label, btnEl){
   state.answers[itemId] = state.answers[itemId] || {};
-  state.answers[itemId].stamp = state.answers[itemId].stamp === label ? null : label;
-  renderSections();
-  reopenAll();
+  const newVal = state.answers[itemId].stamp === label ? null : label;
+  state.answers[itemId].stamp = newVal;
+
+  const parent = btnEl.parentElement;
+  const map = ['sel-sim','sel-nao','sel-prej'];
+  Array.from(parent.children).forEach(b=>b.classList.remove(...map));
+  if(newVal){
+    const idx = Array.from(parent.children).indexOf(btnEl);
+    btnEl.classList.add(map[idx]);
+  }
+
+  const it = findItemById(itemId);
+  if(it && it.extra){
+    const extraDiv = document.getElementById(`extra-${itemId}`);
+    if(extraDiv) extraDiv.style.display = (newVal === it.extra.showOn) ? 'block' : 'none';
+  }
+
+  updateSectionCount(itemId);
   updateProgress();
   scheduleSave();
 }
