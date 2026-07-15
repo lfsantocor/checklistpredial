@@ -609,7 +609,7 @@ header h1{
       <button style="background:#F1F3F2;color:var(--ink);" onclick="closeReport()">Fechar</button>
       <button style="background:var(--primary);color:#fff;" onclick="copyReport()">Copiar texto</button>
       <button style="background:var(--ok);color:#fff;" onclick="generatePDF()">PDF</button>
-      <button style="background:#2B5C8A;color:#fff;" onclick="generateDOCX()">Exportar DOCX</button>
+      <button style="background:#2B5C8A;color:#fff;" onclick="generateDOCX()">Google Docs</button>
     </div>
   </div>
 </div>
@@ -1077,28 +1077,28 @@ function buildReportHTML(){
   return html;
 }
 
-function docxBadgeColorsHex(it, stampValue){
-  if(!stampValue) return {bg:'F1F3F2', fg:'9AA5AC'};
+function statusColor(it, stampValue){
+  if(!stampValue) return '9AA5AC';
   const labels = it.labels || STAMP_LABELS_DEFAULT;
   const idx = labels.indexOf(stampValue);
-  if(idx===0) return {bg:'E3F0E9', fg:'3A7D5C'};
-  if(idx===1) return {bg:'F7E6E2', fg:'AE3B2E'};
-  if(idx===2) return {bg:'FBF0DB', fg:'B5822A'};
-  return {bg:'F1F3F2', fg:'9AA5AC'};
+  if(idx===0) return '3A7D5C';
+  if(idx===1) return 'AE3B2E';
+  if(idx===2) return 'B5822A';
+  return '9AA5AC';
 }
 
 function buildDocxDocument(){
-  const { Document, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, VerticalAlign } = docx;
+  const { Document, Paragraph, TextRun, BorderStyle, AlignmentType } = docx;
   const u = state.unit;
   const {total, done} = countAnswerable();
   const totalPhotos = Object.values(state.photos).filter(c=>c>0).length;
-  const thinBorder = { style: BorderStyle.SINGLE, size: 4, color: 'E9ECEA' };
+  const hairline = { bottom:{ color:'DBE1DD', space:6, style:BorderStyle.SINGLE, size:4 } };
 
   const children = [];
 
   children.push(new Paragraph({
     children:[ new TextRun({ text:'CORREGEDORIA · Correição PREDIAL', bold:true, color:'234E70', size:16 }) ],
-    spacing:{ after:60 }
+    spacing:{ after:80 }
   }));
   children.push(new Paragraph({
     children:[ new TextRun({ text: u.nome || u.comarca || 'Checklist de Correição', bold:true, color:'152F44', size:44 }) ],
@@ -1106,108 +1106,88 @@ function buildDocxDocument(){
   }));
   children.push(new Paragraph({
     children:[ new TextRun({ text:`${done} de ${total} itens respondidos`, color:'5B6B74', size:20 }) ],
-    spacing:{ after:220 }
+    border: hairline,
+    spacing:{ after:260 }
   }));
 
-  function metaCell(label, value, pct, span){
-    return new TableCell({
-      width:{ size:pct, type:WidthType.PERCENTAGE },
-      columnSpan: span || 1,
-      margins:{ top:100, bottom:100, left:120, right:120 },
+  function metaLine(label, value){
+    children.push(new Paragraph({
       children:[
-        new Paragraph({ children:[ new TextRun({ text:label.toUpperCase(), bold:true, size:14, color:'8A9299' }) ] }),
-        new Paragraph({ children:[ new TextRun({ text:value || '—', size:20, color:'16232E' }) ] }),
-      ]
-    });
+        new TextRun({ text:`${label}:  `, bold:true, color:'8A9299', size:19 }),
+        new TextRun({ text: value || '—', color:'16232E', size:19 }),
+      ],
+      spacing:{ after:80 }
+    }));
   }
-
-  children.push(new Table({
-    width:{ size:100, type:WidthType.PERCENTAGE },
-    rows:[
-      new TableRow({ children:[ metaCell('Comarca', u.comarca, 50), metaCell('Data da visita', u.data, 50) ] }),
-      new TableRow({ children:[ metaCell('Endereço', u.endereco, 100, 2) ] }),
-      new TableRow({ children:[ metaCell('Juiz Diretor do Foro', u.juiz, 50), metaCell('Secretário(a) de gestão', u.secretario, 50) ] }),
-      new TableRow({ children:[ metaCell('Servidores', servidoresText(u), 100, 2) ] }),
-    ]
-  }));
-  children.push(new Paragraph({ text:'', spacing:{ after:120 } }));
+  metaLine('Comarca', u.comarca);
+  metaLine('Data da visita', u.data);
+  metaLine('Endereço', u.endereco);
+  metaLine('Juiz Diretor do Foro', u.juiz);
+  metaLine('Secretário(a) de gestão', u.secretario);
+  metaLine('Servidores', servidoresText(u));
+  children.push(new Paragraph({ text:'', border:hairline, spacing:{ after:200 } }));
 
   SECTIONS.forEach(sec=>{
     children.push(new Paragraph({
-      children:[ new TextRun({ text:`${sec.num}. ${sec.title}`, bold:true, color:'152F44', size:26 }) ],
-      shading:{ fill:'EEF1EF' },
-      border:{ left:{ color:'234E70', space:8, style:BorderStyle.SINGLE, size:24 } },
-      spacing:{ before:300, after:120 },
+      children:[ new TextRun({ text:`${sec.num}. ${sec.title.toUpperCase()}`, bold:true, color:'152F44', size:24 }) ],
+      border: hairline,
+      spacing:{ before:320, after:160 },
     }));
 
-    const rows = [];
     sec.items.forEach(it=>{
       const a = state.answers[it.id] || {};
       if(it.type === 'text'){
         const val = a.obs && a.obs.trim();
-        rows.push(new TableRow({
-          children:[ new TableCell({
-            columnSpan:2,
-            margins:{ top:100, bottom:100, left:100, right:100 },
-            borders:{ bottom:thinBorder },
-            children:[
-              new Paragraph({ children:[ new TextRun({ text:it.q, bold:true, size:20, color:'152F44' }) ] }),
-              new Paragraph({ children:[ new TextRun({ text: val ? a.obs : '(não preenchido)', italics: !val, size:19, color: val ? '16232E' : '9AA5AC' }) ] }),
-            ]
-          }) ]
+        children.push(new Paragraph({
+          children:[ new TextRun({ text:it.q, bold:true, color:'152F44', size:20 }) ],
+          spacing:{ after:40 }
+        }));
+        children.push(new Paragraph({
+          children:[ new TextRun({ text: val ? a.obs : '(não preenchido)', italics: !val, color: val ? '16232E' : '9AA5AC', size:19 }) ],
+          spacing:{ after:160 }
         }));
       } else {
-        const c = docxBadgeColorsHex(it, a.stamp);
+        const color = statusColor(it, a.stamp);
         const badgeLabel = a.stamp || 'Não respondido';
-        let obsLine = '';
+        children.push(new Paragraph({
+          children:[
+            new TextRun({ text: it.q + '  —  ', color:'16232E', size:20 }),
+            new TextRun({ text: badgeLabel.toUpperCase(), bold:true, color, size:19 }),
+          ],
+          spacing:{ after: (a.extraList && a.extraList.some(v=>v&&v.trim())) || (a.obs && a.obs.trim()) ? 30 : 140 }
+        }));
         const extraText = a.extraList ? a.extraList.filter(v=>v && v.trim()).join(', ') : '';
+        let obsLine = '';
         if(extraText) obsLine += `Números: ${extraText}. `;
         if(a.obs && a.obs.trim()) obsLine += a.obs;
-        const qParagraphs = [ new Paragraph({ children:[ new TextRun({ text:it.q, size:21, color:'16232E' }) ] }) ];
-        if(obsLine) qParagraphs.push(new Paragraph({ children:[ new TextRun({ text:obsLine, italics:true, size:18, color:'777777' }) ] }));
-        rows.push(new TableRow({
-          children:[
-            new TableCell({
-              width:{ size:74, type:WidthType.PERCENTAGE },
-              margins:{ top:100, bottom:100, left:100, right:100 },
-              borders:{ bottom:thinBorder },
-              children:qParagraphs
-            }),
-            new TableCell({
-              width:{ size:26, type:WidthType.PERCENTAGE },
-              shading:{ fill:c.bg },
-              verticalAlign:VerticalAlign.CENTER,
-              margins:{ top:100, bottom:100, left:100, right:100 },
-              borders:{ bottom:thinBorder },
-              children:[ new Paragraph({ alignment:AlignmentType.CENTER, children:[ new TextRun({ text:badgeLabel, bold:true, size:18, color:c.fg }) ] }) ]
-            }),
-          ]
-        }));
+        if(obsLine){
+          children.push(new Paragraph({
+            children:[ new TextRun({ text:obsLine, italics:true, color:'777777', size:18 }) ],
+            spacing:{ after:140 }
+          }));
+        }
       }
     });
-    children.push(new Table({ width:{ size:100, type:WidthType.PERCENTAGE }, rows }));
-    children.push(new Paragraph({ text:'', spacing:{ after:80 } }));
   });
 
   children.push(new Paragraph({
-    children:[ new TextRun({ text:`FOTO — Relatório Fotográfico (${totalPhotos}/${PHOTO_ITEMS.length})`, bold:true, color:'152F44', size:26 }) ],
-    shading:{ fill:'EEF1EF' },
-    border:{ left:{ color:'234E70', space:8, style:BorderStyle.SINGLE, size:24 } },
-    spacing:{ before:300, after:120 },
+    children:[ new TextRun({ text:`FOTO — RELATÓRIO FOTOGRÁFICO (${totalPhotos}/${PHOTO_ITEMS.length})`, bold:true, color:'152F44', size:24 }) ],
+    border: hairline,
+    spacing:{ before:320, after:160 },
   }));
   PHOTO_ITEMS.forEach(p=>{
     const donePhoto = state.photos[p] > 0;
     children.push(new Paragraph({
-      children:[ new TextRun({ text:(donePhoto ? '☑  ' : '☐  ') + p, size:20, color: donePhoto ? '3A7D5C' : '16232E' }) ],
-      spacing:{ after:40 }
+      children:[ new TextRun({ text:(donePhoto ? '☑  ' : '☐  ') + p, color: donePhoto ? '3A7D5C' : '16232E', size:20 }) ],
+      spacing:{ after:60 }
     }));
   });
 
   const now = new Date();
   children.push(new Paragraph({
-    alignment:AlignmentType.CENTER,
-    spacing:{ before:320 },
-    children:[ new TextRun({ text:`Relatório gerado em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`, size:14, color:'9AA5AC' }) ]
+    alignment: AlignmentType.CENTER,
+    spacing:{ before:360 },
+    children:[ new TextRun({ text:`Relatório gerado em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`, color:'9AA5AC', size:14 }) ]
   }));
 
   return new Document({ sections:[{ properties:{}, children }] });
