@@ -210,29 +210,24 @@ header h1{
   text-transform:uppercase;
   color:var(--ink-soft);
   cursor:pointer;
-  transition:transform .12s ease, box-shadow .12s ease;
   position:relative;
 }
-.stamp:active{transform:scale(.96);}
 .stamp.sel-sim{
   border-color:var(--ok);
   color:var(--ok);
   background:var(--ok-bg);
-  transform:rotate(-1.5deg);
   box-shadow:0 0 0 3px rgba(58,125,92,.12);
 }
 .stamp.sel-nao{
   border-color:var(--alert);
   color:var(--alert);
   background:var(--alert-bg);
-  transform:rotate(1.5deg);
   box-shadow:0 0 0 3px rgba(174,59,46,.12);
 }
 .stamp.sel-prej{
   border-color:var(--warn);
   color:var(--warn);
   background:var(--warn-bg);
-  transform:rotate(-1deg);
   box-shadow:0 0 0 3px rgba(181,130,42,.12);
 }
 .item textarea{
@@ -250,6 +245,41 @@ header h1{
 .item textarea:focus{outline:2px solid var(--primary); outline-offset:1px; background:#fff;}
 .item textarea::placeholder{color:#A6B1B7;}
 .extra-field{margin-top:8px;}
+.extra-row{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin-bottom:6px;
+}
+.extra-row input{
+  flex:1;
+}
+.extra-remove{
+  flex-shrink:0;
+  width:28px;
+  height:28px;
+  border-radius:6px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--alert);
+  font-size:16px;
+  line-height:1;
+  cursor:pointer;
+}
+.extra-add-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  border:1.5px dashed var(--primary);
+  background:#fff;
+  color:var(--primary);
+  font-size:12px;
+  font-weight:600;
+  font-family:'IBM Plex Sans',sans-serif;
+  padding:7px 12px;
+  border-radius:7px;
+  cursor:pointer;
+}
 .extra-field input{
   width:100%;
   padding:8px 10px;
@@ -362,9 +392,9 @@ header h1{
   padding:12px;
   color:var(--ink);
 }
-.modal-actions{display:flex; gap:8px; margin-top:12px;}
+.modal-actions{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
 .modal-actions button{
-  flex:1; padding:11px; border-radius:8px; border:none; font-weight:600; font-size:13px; cursor:pointer;
+  flex:1 1 45%; padding:11px; border-radius:8px; border:none; font-weight:600; font-size:13px; cursor:pointer;
 }
 .save-indicator{
   font-size:10px;
@@ -372,9 +402,164 @@ header h1{
   text-align:right;
   margin-top:4px;
 }
+
+/* PRINT / PDF VISUAL REPORT */
+#print-report-wrap{ display:none; }
+.pr-page{
+  font-family:'IBM Plex Sans', sans-serif;
+  color:#16232E;
+  max-width:760px;
+  margin:0 auto;
+  padding:10px;
+}
+.pr-header{
+  border-bottom:3px solid #234E70;
+  padding-bottom:14px;
+  margin-bottom:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+}
+.pr-eyebrow{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:#234E70;
+}
+.pr-title{
+  font-family:'Source Serif 4',serif;
+  font-size:23px;
+  font-weight:700;
+  color:#152F44;
+  margin:4px 0 0;
+}
+.pr-stamp-summary{
+  text-align:right;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10px;
+  color:#5B6B74;
+}
+.pr-stamp-summary .big{
+  font-size:20px;
+  font-weight:700;
+  color:#3A7D5C;
+  display:block;
+}
+.pr-meta{
+  background:#F4F6F5;
+  border:1px solid #DBE1DD;
+  border-radius:8px;
+  padding:12px 16px;
+  margin-bottom:20px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px 24px;
+}
+.pr-meta div span.k{
+  display:block;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:8.5px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:#8A9299;
+}
+.pr-meta div span.v{
+  font-size:12px;
+  color:#16232E;
+}
+.pr-meta .full{ grid-column:1 / -1; }
+.pr-section-title{
+  font-family:'Source Serif 4',serif;
+  font-size:14.5px;
+  font-weight:700;
+  background:#EEF1EF;
+  padding:7px 12px;
+  border-left:4px solid #234E70;
+  margin:22px 0 8px;
+  color:#152F44;
+  page-break-after:avoid;
+}
+.pr-item{
+  padding:7px 2px;
+  border-bottom:1px solid #E9ECEA;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+  page-break-inside:avoid;
+}
+.pr-item .q{
+  font-size:11.5px;
+  line-height:1.4;
+  flex:1;
+}
+.pr-item .q .obs{
+  display:block;
+  font-size:10px;
+  color:#5B6B74;
+  font-style:italic;
+  margin-top:3px;
+}
+.pr-badge{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.03em;
+  padding:4px 11px;
+  border-radius:20px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.pr-badge-ok{ background:#E3F0E9; color:#3A7D5C; border:1px solid #3A7D5C; }
+.pr-badge-alert{ background:#F7E6E2; color:#AE3B2E; border:1px solid #AE3B2E; }
+.pr-badge-warn{ background:#FBF0DB; color:#B5822A; border:1px solid #B5822A; }
+.pr-badge-empty{ background:#F1F3F2; color:#9AA5AC; border:1px solid #DBE1DD; }
+.pr-text-item{ padding:7px 2px; border-bottom:1px solid #E9ECEA; page-break-inside:avoid; }
+.pr-text-item .q{ font-size:11.5px; font-weight:600; margin-bottom:3px; color:#152F44; }
+.pr-text-item .a{ font-size:11px; color:#16232E; }
+.pr-text-item .a.empty{ color:#9AA5AC; font-style:italic; }
+.pr-photo-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5px 24px;
+  margin-top:6px;
+}
+.pr-photo-item{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:11px;
+  padding:3px 0;
+}
+.pr-photo-check{
+  width:15px; height:15px; border-radius:4px;
+  border:1.5px solid #DBE1DD;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; flex-shrink:0;
+}
+.pr-photo-check.done{ background:#E3F0E9; border-color:#3A7D5C; color:#3A7D5C; }
+.pr-footer{
+  margin-top:26px;
+  padding-top:10px;
+  border-top:1px solid #DBE1DD;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;
+  color:#9AA5AC;
+  text-align:center;
+}
+@page{ margin:14mm 12mm; }
+@media print{
+  body > *:not(#print-report-wrap){ display:none !important; }
+  #print-report-wrap{ display:block !important; }
+  * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+}
 </style>
 </head>
 <body>
+
+<div id="print-report-wrap"><div class="pr-page" id="print-report"></div></div>
 
 <header>
   <div class="eyebrow tag">Corregedoria &middot; Inspeção Predial</div>
@@ -395,7 +580,7 @@ header h1{
   <div class="field-row"><label>Endereço completo</label><textarea id="f-endereco" rows="2" placeholder="Rod. ES 080, Km 44..."></textarea></div>
   <div class="field-row"><label>Juiz Diretor do Foro</label><input id="f-juiz"></div>
   <div class="field-row"><label>Secretário(a) de gestão do Foro</label><input id="f-secretario"></div>
-  <div class="field-row"><label>Servidores</label><input id="f-servidores"></div>
+  <div class="field-row"><label>Servidores</label><div id="servidores-list"></div></div>
   <div class="field-row"><label>Data da visita</label><input id="f-data" type="date"></div>
 </div>
 
@@ -423,55 +608,69 @@ header h1{
     <div class="modal-actions">
       <button style="background:#F1F3F2;color:var(--ink);" onclick="closeReport()">Fechar</button>
       <button style="background:var(--primary);color:#fff;" onclick="copyReport()">Copiar texto</button>
-      <button style="background:var(--ok);color:#fff;" onclick="window.print()">Imprimir / PDF</button>
+      <button style="background:var(--ok);color:#fff;" onclick="generatePDF()">PDF</button>
+      <button style="background:#2B5C8A;color:#fff;" onclick="generateDOCX()">Exportar DOCX</button>
     </div>
   </div>
 </div>
 
+<script src="https://unpkg.com/docx@8.2.0/build/index.umd.cjs"></script>
 <script>
 const STAMP_LABELS_DEFAULT = ['Sim','Não','Prejudicado'];
 const STAMP_LABELS_ACESSO = ['Comum','Segregado','Prejudicado'];
 
 const SECTIONS = [
   { id:'s1', num:'01', title:'Infraestrutura e Conservação (Estado Físico)', items:[
-    { id:'i1', q:'Fachada e Identificação: pintura em dia? Nome do fórum visível?', type:'stamp' },
-    { id:'i2', q:'Piso e Paredes: há rachaduras, infiltrações, mofo ou azulejos soltos?', type:'stamp' },
-    { id:'i3', q:'Teto e Cobertura: sinais de goteiras, manchas de umidade ou forro caído?', type:'stamp' },
-    { id:'i4', q:'Esquadrias: janelas e portas abrem/fecham corretamente? Vidros quebrados?', type:'stamp' },
-    { id:'i5', q:'Mobiliário: mesas e cadeiras em bom estado? Armários adequados?', type:'stamp' },
-    { id:'i6', q:'Sustentabilidade: placas solares operantes?', type:'stamp' },
-    { id:'i7', q:'Lixeiras de coleta seletiva?', type:'stamp' },
-    { id:'i8', q:'Manutenção SEI: existem números de chamados anotados para reparos urgentes?', type:'stamp', extra:{label:'Números dos chamados', showOn:'Sim'} },
+    { id:'i1', q:'Fachada: pintura está em dia?', type:'stamp' },
+    { id:'i2', q:'Fachada: nome do fórum está visível?', type:'stamp' },
+    { id:'i3', q:'Piso e paredes: estão livres de rachaduras e infiltrações?', type:'stamp' },
+    { id:'i4', q:'Piso e paredes: estão livres de mofo e azulejos soltos?', type:'stamp' },
+    { id:'i5', q:'Teto e cobertura: sem sinais de goteiras ou manchas de umidade?', type:'stamp' },
+    { id:'i6', q:'Teto e cobertura: forro está íntegro, sem partes caídas?', type:'stamp' },
+    { id:'i7', q:'Esquadrias: janelas e portas abrem e fecham corretamente?', type:'stamp' },
+    { id:'i8', q:'Esquadrias: vidros estão intactos, sem quebras?', type:'stamp' },
+    { id:'i9', q:'Mobiliário: mesas e cadeiras estão em bom estado?', type:'stamp' },
+    { id:'i10', q:'Mobiliário: armários são adequados?', type:'stamp' },
+    { id:'i11', q:'Sustentabilidade: placas solares operantes?', type:'stamp' },
+    { id:'i12', q:'Sustentabilidade: há lixeiras de coleta seletiva?', type:'stamp' },
+    { id:'i13', q:'Manutenção SEI: existem números de chamados anotados para reparos urgentes?', type:'stamp', extra:{label:'Números dos chamados', showOn:'Sim'} },
   ]},
   { id:'s2', num:'02', title:'Acessibilidade (Res. CNJ 401/2021 e 41/2023)', items:[
-    { id:'i9', q:'Rampas e Elevadores: acesso autônomo da calçada até o interior? Elevador funcionando?', type:'stamp' },
-    { id:'i10', q:'Estacionamento: vagas para idosos e PcD devidamente demarcadas e próximas à entrada?', type:'stamp' },
-    { id:'i11', q:'Sanitários: há banheiros adaptados para PcD em todos os pavimentos de atendimento? Masculino e feminino?', type:'stamp' },
-    { id:'i12', q:'Dignidade no Acesso: o fluxo de PcD é comum ao público ou é segregado por entradas de serviço?', type:'stamp', labels:STAMP_LABELS_ACESSO },
-    { id:'i13', q:'Animais de Assistência: há vedação de entrada (cão-guia)? Portaria tratando sobre o tema?', type:'stamp' },
+    { id:'i14', q:'Rampas: há acesso autônomo da calçada até o interior?', type:'stamp' },
+    { id:'i15', q:'Elevador: está funcionando?', type:'stamp' },
+    { id:'i16', q:'Estacionamento: vagas para idosos e PcD estão demarcadas e próximas à entrada?', type:'stamp' },
+    { id:'i17', q:'Sanitários: há banheiro adaptado para PcD no(s) pavimento(s) de atendimento — masculino?', type:'stamp' },
+    { id:'i18', q:'Sanitários: há banheiro adaptado para PcD no(s) pavimento(s) de atendimento — feminino?', type:'stamp' },
+    { id:'i19', q:'Dignidade no Acesso: o fluxo de PcD é comum ao público?', type:'stamp', labels:STAMP_LABELS_ACESSO },
+    { id:'i20', q:'Animais de Assistência: é permitida a entrada de cão-guia?', type:'stamp' },
+    { id:'i21', q:'Animais de Assistência: há portaria tratando sobre o tema?', type:'stamp' },
   ]},
   { id:'s3', num:'03', title:'Segurança Institucional (Res. CNJ 435/2021)', items:[
-    { id:'i14', q:'Pórtico/Metais: detector de metais instalado e com vigilante operando?', type:'stamp' },
-    { id:'i15', q:'Identificação: cadastro de visitantes com foto e entrega de crachás?', type:'stamp' },
-    { id:'i16', q:'Monitoramento: câmeras (CFTV) cobrindo áreas comuns e corredores?', type:'stamp' },
-    { id:'i17', q:'Policiamento: presença de segurança privada e/ou policial militar no local?', type:'stamp' },
-    { id:'i18', q:'Fluxo de Presos: entrada de viaturas é isolada do público? Há contato visual entre presos e vítimas nos corredores?', type:'stamp' },
+    { id:'i22', q:'Pórtico/Metais: detector de metais está instalado?', type:'stamp' },
+    { id:'i23', q:'Pórtico/Metais: há vigilante operando o detector?', type:'stamp' },
+    { id:'i24', q:'Identificação: há cadastro de visitantes com foto?', type:'stamp' },
+    { id:'i25', q:'Identificação: há entrega de crachás?', type:'stamp' },
+    { id:'i26', q:'Monitoramento: câmeras (CFTV) cobrem áreas comuns e corredores?', type:'stamp' },
+    { id:'i27', q:'Policiamento: há segurança privada e/ou policial militar no local?', type:'stamp' },
+    { id:'i28', q:'Fluxo de Presos: entrada de viaturas é isolada do público?', type:'stamp' },
+    { id:'i29', q:'Fluxo de Presos: os corredores garantem ausência de contato visual entre presos e vítimas?', type:'stamp' },
   ]},
   { id:'s4', num:'04', title:'Áreas de Apoio e Operacional', items:[
-    { id:'i19', q:'Arquivo: espaço ventilado? Caixas organizadas e fora do chão (risco de alagamento)?', type:'stamp' },
-    { id:'i20', q:'Sala Passiva: espaço exclusivo para o "excluído digital" realizar atos virtuais?', type:'stamp' },
-    { id:'i21', q:'Sala Passiva: o agendamento é feito por meio do Google Agenda?', type:'stamp' },
-    { id:'i22', q:'Copa/Cozinha: condições de higiene e conservação dos eletrodomésticos e armários.', type:'stamp' },
-    { id:'i23', q:'Servidora responsável pela gestão do foro', type:'text', placeholder:'Nome' },
+    { id:'i30', q:'Arquivo: espaço é ventilado?', type:'stamp' },
+    { id:'i31', q:'Arquivo: caixas estão organizadas e fora do chão (risco de alagamento)?', type:'stamp' },
+    { id:'i32', q:'Sala Passiva: há espaço exclusivo para o "excluído digital" realizar atos virtuais?', type:'stamp' },
+    { id:'i33', q:'Sala Passiva: o agendamento é feito por meio do Google Agenda?', type:'stamp' },
+    { id:'i34', q:'Copa/Cozinha: eletrodomésticos e armários estão em boas condições de higiene e conservação?', type:'stamp' },
   ]},
   { id:'s5', num:'05', title:'Pessoal', items:[
-    { id:'i27', q:'Quem monitora os trabalhos dos oficiais de justiça?', type:'text', placeholder:'Nome' },
-    { id:'i28', q:'Controle de mandados distribuídos — como é feito?', type:'text', placeholder:'Descrição' },
-    { id:'i29', q:'Último levantamento bimestral (art. 515, XI) — via SEI?', type:'text', placeholder:'Observações' },
-    { id:'i30', q:'Pasta de controle de comparecimento dos oficiais (art. 511, XIII)', type:'text', placeholder:'Observações' },
-    { id:'i31', q:'Expedientes disciplinares em curso (Provimento Conjunto TJES nº 1/2021) — tempo de tramitação', type:'text', placeholder:'Observações' },
-    { id:'i32', q:'Cadastramento de bens apreendidos no SNGB — há bens pendentes de destinação?', type:'text', placeholder:'Observações' },
-    { id:'i33', q:'Há armas de fogo pendentes de destinação ou destruição?', type:'text', placeholder:'Observações' },
+    { id:'i36', q:'Quem monitora os trabalhos dos oficiais de justiça?', type:'text', placeholder:'Nome' },
+    { id:'i37', q:'Controle de mandados distribuídos — como é feito?', type:'text', placeholder:'Descrição' },
+    { id:'i38', q:'Último levantamento bimestral (art. 511, IX) — via SEI?', type:'stamp', extra:{label:'Número do SEI', showOn:'Sim'} },
+    { id:'i39', q:'Pasta de controle de comparecimento dos oficiais (art. 511, XIII)', type:'stamp' },
+    { id:'i40', q:'Há expedientes disciplinares em curso (Provimento Conjunto TJES nº 1/2021)?', type:'stamp', extra:{label:'Número do expediente', showOn:'Sim'} },
+    { id:'i41', q:'Cadastramento de bens apreendidos é feito no SNGB?', type:'stamp' },
+    { id:'i42', q:'Há bens apreendidos pendentes de destinação?', type:'stamp' },
+    { id:'i43', q:'Há armas de fogo pendentes de destinação ou destruição?', type:'text', placeholder:'Observações' },
   ]},
 ];
 
@@ -550,10 +749,21 @@ function renderItem(it){
     return `<button type="button" class="stamp ${sel}" onclick="setStamp('${it.id}','${lab.replace(/'/g,"\\'")}')">${lab}</button>`;
   }).join('');
   const showExtra = it.extra && a.stamp === it.extra.showOn;
-  const extraHtml = it.extra ? `
-    <div class="extra-field" style="display:${showExtra?'block':'none'}" id="extra-${it.id}">
-      <input placeholder="${it.extra.label}" value="${a.extra||''}" oninput="setExtra('${it.id}', this.value)">
-    </div>` : '';
+  let extraHtml = '';
+  if(it.extra){
+    const list = (a.extraList && a.extraList.length) ? a.extraList : [''];
+    const rows = list.map((val, idx) => `
+      <div class="extra-row">
+        <input placeholder="${it.extra.label}" value="${escapeHtml(val)}" oninput="setExtraAt('${it.id}', ${idx}, this.value)">
+        ${list.length > 1 ? `<button type="button" class="extra-remove" onclick="removeExtraField('${it.id}', ${idx})">&times;</button>` : ''}
+      </div>
+    `).join('');
+    extraHtml = `
+      <div class="extra-field" style="display:${showExtra?'block':'none'}" id="extra-${it.id}">
+        ${rows}
+        <button type="button" class="extra-add-btn" onclick="addExtraField('${it.id}')">+ Adicionar chamado</button>
+      </div>`;
+  }
   return `
     <div class="item">
       <div class="question">${it.q}</div>
@@ -609,9 +819,27 @@ function setText(itemId, val){
   updateProgress();
   scheduleSave();
 }
-function setExtra(itemId, val){
+function setExtraAt(itemId, idx, val){
   state.answers[itemId] = state.answers[itemId] || {};
-  state.answers[itemId].extra = val;
+  if(!state.answers[itemId].extraList || !state.answers[itemId].extraList.length) state.answers[itemId].extraList = [''];
+  state.answers[itemId].extraList[idx] = val;
+  scheduleSave();
+}
+function addExtraField(itemId){
+  state.answers[itemId] = state.answers[itemId] || {};
+  if(!state.answers[itemId].extraList || !state.answers[itemId].extraList.length) state.answers[itemId].extraList = [''];
+  state.answers[itemId].extraList.push('');
+  renderSections();
+  reopenAll();
+  scheduleSave();
+}
+function removeExtraField(itemId, idx){
+  state.answers[itemId] = state.answers[itemId] || {};
+  if(!state.answers[itemId].extraList || !state.answers[itemId].extraList.length) state.answers[itemId].extraList = [''];
+  state.answers[itemId].extraList.splice(idx, 1);
+  if(state.answers[itemId].extraList.length === 0) state.answers[itemId].extraList = [''];
+  renderSections();
+  reopenAll();
   scheduleSave();
 }
 
@@ -634,7 +862,7 @@ function applyOpenState(){
   });
 }
 
-['comarca','nome','endereco','juiz','secretario','servidores','data'].forEach(key=>{
+['comarca','nome','endereco','juiz','secretario','data'].forEach(key=>{
   const el = document.getElementById('f-'+key);
   el.addEventListener('input', ()=>{
     state.unit[key] = el.value;
@@ -642,6 +870,36 @@ function applyOpenState(){
     scheduleSave();
   });
 });
+
+function renderServidoresList(){
+  const container = document.getElementById('servidores-list');
+  const list = (state.unit.servidoresList && state.unit.servidoresList.length) ? state.unit.servidoresList : [''];
+  container.innerHTML = list.map((val, idx) => `
+    <div class="extra-row">
+      <input placeholder="Nome do(a) servidor(a)" value="${escapeHtml(val)}" oninput="setServidorAt(${idx}, this.value)">
+      ${list.length > 1 ? `<button type="button" class="extra-remove" onclick="removeServidorField(${idx})">&times;</button>` : ''}
+    </div>
+  `).join('') + `<button type="button" class="extra-add-btn" onclick="addServidorField()">+ Adicionar servidor</button>`;
+}
+function setServidorAt(idx, val){
+  if(!state.unit.servidoresList || !state.unit.servidoresList.length) state.unit.servidoresList = [''];
+  state.unit.servidoresList[idx] = val;
+  updateProgress();
+  scheduleSave();
+}
+function addServidorField(){
+  if(!state.unit.servidoresList || !state.unit.servidoresList.length) state.unit.servidoresList = [''];
+  state.unit.servidoresList.push('');
+  renderServidoresList();
+  scheduleSave();
+}
+function removeServidorField(idx){
+  if(!state.unit.servidoresList || !state.unit.servidoresList.length) state.unit.servidoresList = [''];
+  state.unit.servidoresList.splice(idx, 1);
+  if(state.unit.servidoresList.length === 0) state.unit.servidoresList = [''];
+  renderServidoresList();
+  scheduleSave();
+}
 
 function scheduleSave(){
   document.getElementById('save-indicator').textContent = 'salvando…';
@@ -664,9 +922,13 @@ async function loadState(){
       state = Object.assign({unit:{},answers:{},photos:{}}, loaded);
     }
   }catch(e){ /* nothing saved yet */ }
-  ['comarca','nome','endereco','juiz','secretario','servidores','data'].forEach(key=>{
+  ['comarca','nome','endereco','juiz','secretario','data'].forEach(key=>{
     document.getElementById('f-'+key).value = state.unit[key] || '';
   });
+  if(!state.unit.servidoresList || !state.unit.servidoresList.length){
+    state.unit.servidoresList = (state.unit.servidores && state.unit.servidores.trim()) ? [state.unit.servidores] : [''];
+  }
+  renderServidoresList();
   renderSections();
   applyOpenState();
   renderPhotos();
@@ -675,16 +937,271 @@ async function loadState(){
 
 async function confirmReset(){
   if(confirm('Iniciar nova visita? Os dados atuais serão substituídos (o histórico local não é apagado, mas esta tela será limpa).')){
-    state = { unit:{comarca:'',nome:'',endereco:'',juiz:'',secretario:'',servidores:'',data:''}, answers:{}, photos:{} };
-    ['comarca','nome','endereco','juiz','secretario','servidores','data'].forEach(key=>{
+    state = { unit:{comarca:'',nome:'',endereco:'',juiz:'',secretario:'',servidoresList:[''],data:''}, answers:{}, photos:{} };
+    ['comarca','nome','endereco','juiz','secretario','data'].forEach(key=>{
       document.getElementById('f-'+key).value = '';
     });
+    renderServidoresList();
     renderSections();
     applyOpenState();
     renderPhotos();
     updateProgress();
     localStorage.setItem('current-inspection', JSON.stringify(state));
   }
+}
+
+function escapeHtml(str){
+  if(!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function servidoresText(u){
+  return (u.servidoresList || []).filter(v=>v && v.trim()).join(', ');
+}
+
+function stampBadgeClass(it, stampValue){
+  if(!stampValue) return 'pr-badge-empty';
+  const labels = it.labels || STAMP_LABELS_DEFAULT;
+  const idx = labels.indexOf(stampValue);
+  if(idx === 0) return 'pr-badge-ok';
+  if(idx === 1) return 'pr-badge-alert';
+  if(idx === 2) return 'pr-badge-warn';
+  return 'pr-badge-empty';
+}
+
+function buildReportHTML(){
+  const u = state.unit;
+  const {total, done} = countAnswerable();
+  const totalPhotos = Object.values(state.photos).filter(c=>c>0).length;
+
+  let html = `
+    <div class="pr-header">
+      <div>
+        <div class="pr-eyebrow">Corregedoria &middot; Inspeção Predial</div>
+        <div class="pr-title">${escapeHtml(u.nome || u.comarca || 'Checklist de Inspeção')}</div>
+      </div>
+      <div class="pr-stamp-summary">
+        <span class="big">${done}/${total}</span>
+        itens respondidos
+      </div>
+    </div>
+    <div class="pr-meta">
+      <div><span class="k">Comarca</span><span class="v">${escapeHtml(u.comarca) || '—'}</span></div>
+      <div><span class="k">Data da visita</span><span class="v">${escapeHtml(u.data) || '—'}</span></div>
+      <div class="full"><span class="k">Endereço</span><span class="v">${escapeHtml(u.endereco) || '—'}</span></div>
+      <div><span class="k">Juiz Diretor do Foro</span><span class="v">${escapeHtml(u.juiz) || '—'}</span></div>
+      <div><span class="k">Secretário(a) de gestão</span><span class="v">${escapeHtml(u.secretario) || '—'}</span></div>
+      <div class="full"><span class="k">Servidores</span><span class="v">${escapeHtml(servidoresText(u)) || '—'}</span></div>
+    </div>
+  `;
+
+  SECTIONS.forEach(sec=>{
+    html += `<div class="pr-section-title">${sec.num}. ${escapeHtml(sec.title)}</div>`;
+    sec.items.forEach(it=>{
+      const a = state.answers[it.id] || {};
+      if(it.type === 'text'){
+        const val = a.obs && a.obs.trim();
+        html += `
+          <div class="pr-text-item">
+            <div class="q">${escapeHtml(it.q)}</div>
+            <div class="a ${val ? '' : 'empty'}">${val ? escapeHtml(a.obs) : '(não preenchido)'}</div>
+          </div>
+        `;
+      } else {
+        const badgeClass = stampBadgeClass(it, a.stamp);
+        const badgeLabel = a.stamp || 'Não respondido';
+        let obsLine = '';
+        const extraText = a.extraList ? a.extraList.filter(v=>v && v.trim()).join(', ') : '';
+        if(extraText) obsLine += `Números: ${escapeHtml(extraText)}. `;
+        if(a.obs && a.obs.trim()) obsLine += escapeHtml(a.obs);
+        html += `
+          <div class="pr-item">
+            <div class="q">${escapeHtml(it.q)}${obsLine ? `<span class="obs">${obsLine}</span>` : ''}</div>
+            <span class="pr-badge ${badgeClass}">${escapeHtml(badgeLabel)}</span>
+          </div>
+        `;
+      }
+    });
+  });
+
+  html += `<div class="pr-section-title">FOTO — Relatório Fotográfico (${totalPhotos}/${PHOTO_ITEMS.length})</div><div class="pr-photo-grid">`;
+  PHOTO_ITEMS.forEach(p=>{
+    const done = state.photos[p] > 0;
+    html += `
+      <div class="pr-photo-item">
+        <div class="pr-photo-check ${done ? 'done' : ''}">${done ? '✓' : ''}</div>
+        <span>${escapeHtml(p)}</span>
+      </div>
+    `;
+  });
+  html += `</div>`;
+
+  const now = new Date();
+  html += `<div class="pr-footer">Relatório gerado em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</div>`;
+
+  return html;
+}
+
+function docxBadgeColorsHex(it, stampValue){
+  if(!stampValue) return {bg:'F1F3F2', fg:'9AA5AC'};
+  const labels = it.labels || STAMP_LABELS_DEFAULT;
+  const idx = labels.indexOf(stampValue);
+  if(idx===0) return {bg:'E3F0E9', fg:'3A7D5C'};
+  if(idx===1) return {bg:'F7E6E2', fg:'AE3B2E'};
+  if(idx===2) return {bg:'FBF0DB', fg:'B5822A'};
+  return {bg:'F1F3F2', fg:'9AA5AC'};
+}
+
+function buildDocxDocument(){
+  const { Document, Paragraph, TextRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, VerticalAlign } = docx;
+  const u = state.unit;
+  const {total, done} = countAnswerable();
+  const totalPhotos = Object.values(state.photos).filter(c=>c>0).length;
+  const thinBorder = { style: BorderStyle.SINGLE, size: 4, color: 'E9ECEA' };
+
+  const children = [];
+
+  children.push(new Paragraph({
+    children:[ new TextRun({ text:'CORREGEDORIA · INSPEÇÃO PREDIAL', bold:true, color:'234E70', size:16 }) ],
+    spacing:{ after:60 }
+  }));
+  children.push(new Paragraph({
+    children:[ new TextRun({ text: u.nome || u.comarca || 'Checklist de Inspeção', bold:true, color:'152F44', size:44 }) ],
+    spacing:{ after:60 }
+  }));
+  children.push(new Paragraph({
+    children:[ new TextRun({ text:`${done} de ${total} itens respondidos`, color:'5B6B74', size:20 }) ],
+    spacing:{ after:220 }
+  }));
+
+  function metaCell(label, value, pct, span){
+    return new TableCell({
+      width:{ size:pct, type:WidthType.PERCENTAGE },
+      columnSpan: span || 1,
+      margins:{ top:100, bottom:100, left:120, right:120 },
+      children:[
+        new Paragraph({ children:[ new TextRun({ text:label.toUpperCase(), bold:true, size:14, color:'8A9299' }) ] }),
+        new Paragraph({ children:[ new TextRun({ text:value || '—', size:20, color:'16232E' }) ] }),
+      ]
+    });
+  }
+
+  children.push(new Table({
+    width:{ size:100, type:WidthType.PERCENTAGE },
+    rows:[
+      new TableRow({ children:[ metaCell('Comarca', u.comarca, 50), metaCell('Data da visita', u.data, 50) ] }),
+      new TableRow({ children:[ metaCell('Endereço', u.endereco, 100, 2) ] }),
+      new TableRow({ children:[ metaCell('Juiz Diretor do Foro', u.juiz, 50), metaCell('Secretário(a) de gestão', u.secretario, 50) ] }),
+      new TableRow({ children:[ metaCell('Servidores', servidoresText(u), 100, 2) ] }),
+    ]
+  }));
+  children.push(new Paragraph({ text:'', spacing:{ after:120 } }));
+
+  SECTIONS.forEach(sec=>{
+    children.push(new Paragraph({
+      children:[ new TextRun({ text:`${sec.num}. ${sec.title}`, bold:true, color:'152F44', size:26 }) ],
+      shading:{ fill:'EEF1EF' },
+      border:{ left:{ color:'234E70', space:8, style:BorderStyle.SINGLE, size:24 } },
+      spacing:{ before:300, after:120 },
+    }));
+
+    const rows = [];
+    sec.items.forEach(it=>{
+      const a = state.answers[it.id] || {};
+      if(it.type === 'text'){
+        const val = a.obs && a.obs.trim();
+        rows.push(new TableRow({
+          children:[ new TableCell({
+            columnSpan:2,
+            margins:{ top:100, bottom:100, left:100, right:100 },
+            borders:{ bottom:thinBorder },
+            children:[
+              new Paragraph({ children:[ new TextRun({ text:it.q, bold:true, size:20, color:'152F44' }) ] }),
+              new Paragraph({ children:[ new TextRun({ text: val ? a.obs : '(não preenchido)', italics: !val, size:19, color: val ? '16232E' : '9AA5AC' }) ] }),
+            ]
+          }) ]
+        }));
+      } else {
+        const c = docxBadgeColorsHex(it, a.stamp);
+        const badgeLabel = a.stamp || 'Não respondido';
+        let obsLine = '';
+        const extraText = a.extraList ? a.extraList.filter(v=>v && v.trim()).join(', ') : '';
+        if(extraText) obsLine += `Números: ${extraText}. `;
+        if(a.obs && a.obs.trim()) obsLine += a.obs;
+        const qParagraphs = [ new Paragraph({ children:[ new TextRun({ text:it.q, size:21, color:'16232E' }) ] }) ];
+        if(obsLine) qParagraphs.push(new Paragraph({ children:[ new TextRun({ text:obsLine, italics:true, size:18, color:'777777' }) ] }));
+        rows.push(new TableRow({
+          children:[
+            new TableCell({
+              width:{ size:74, type:WidthType.PERCENTAGE },
+              margins:{ top:100, bottom:100, left:100, right:100 },
+              borders:{ bottom:thinBorder },
+              children:qParagraphs
+            }),
+            new TableCell({
+              width:{ size:26, type:WidthType.PERCENTAGE },
+              shading:{ fill:c.bg },
+              verticalAlign:VerticalAlign.CENTER,
+              margins:{ top:100, bottom:100, left:100, right:100 },
+              borders:{ bottom:thinBorder },
+              children:[ new Paragraph({ alignment:AlignmentType.CENTER, children:[ new TextRun({ text:badgeLabel, bold:true, size:18, color:c.fg }) ] }) ]
+            }),
+          ]
+        }));
+      }
+    });
+    children.push(new Table({ width:{ size:100, type:WidthType.PERCENTAGE }, rows }));
+    children.push(new Paragraph({ text:'', spacing:{ after:80 } }));
+  });
+
+  children.push(new Paragraph({
+    children:[ new TextRun({ text:`FOTO — Relatório Fotográfico (${totalPhotos}/${PHOTO_ITEMS.length})`, bold:true, color:'152F44', size:26 }) ],
+    shading:{ fill:'EEF1EF' },
+    border:{ left:{ color:'234E70', space:8, style:BorderStyle.SINGLE, size:24 } },
+    spacing:{ before:300, after:120 },
+  }));
+  PHOTO_ITEMS.forEach(p=>{
+    const donePhoto = state.photos[p] > 0;
+    children.push(new Paragraph({
+      children:[ new TextRun({ text:(donePhoto ? '☑  ' : '☐  ') + p, size:20, color: donePhoto ? '3A7D5C' : '16232E' }) ],
+      spacing:{ after:40 }
+    }));
+  });
+
+  const now = new Date();
+  children.push(new Paragraph({
+    alignment:AlignmentType.CENTER,
+    spacing:{ before:320 },
+    children:[ new TextRun({ text:`Relatório gerado em ${now.toLocaleDateString('pt-BR')} às ${now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`, size:14, color:'9AA5AC' }) ]
+  }));
+
+  return new Document({ sections:[{ properties:{}, children }] });
+}
+
+function generateDOCX(){
+  if(typeof docx === 'undefined'){
+    alert('Não foi possível carregar o gerador de DOCX. Verifique sua conexão com a internet e tente novamente.');
+    return;
+  }
+  const doc = buildDocxDocument();
+  docx.Packer.toBlob(doc).then(blob=>{
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    const filenameBase = (state.unit.nome || state.unit.comarca || 'checklist-inspecao')
+      .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+    link.href = url;
+    link.download = `${filenameBase || 'checklist-inspecao'}.docx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(()=>URL.revokeObjectURL(url), 3000);
+  }).catch(err=>{
+    alert('Erro ao gerar o DOCX: ' + err.message);
+  });
+}
+
+function generatePDF(){
+  document.getElementById('print-report').innerHTML = buildReportHTML();
+  setTimeout(()=>{ window.print(); }, 150);
 }
 
 function buildReportText(){
@@ -697,7 +1214,7 @@ function buildReportText(){
   lines.push(`Endereço: ${u.endereco||'-'}`);
   lines.push(`Juiz Diretor do Foro: ${u.juiz||'-'}`);
   lines.push(`Secretário(a) de gestão: ${u.secretario||'-'}`);
-  lines.push(`Servidores: ${u.servidores||'-'}`);
+  lines.push(`Servidores: ${servidoresText(u)||'-'}`);
   lines.push(`Data da visita: ${u.data||'-'}`);
   lines.push('');
   SECTIONS.forEach(sec=>{
@@ -710,7 +1227,8 @@ function buildReportText(){
         lines.push(`  Resposta: ${a.obs && a.obs.trim() ? a.obs : '(não preenchido)'}`);
       } else {
         lines.push(`• ${it.q}`);
-        lines.push(`  Situação: ${a.stamp || '(não respondido)'}${a.extra? ' — '+a.extra : ''}`);
+        const extraText = a.extraList ? a.extraList.filter(v=>v && v.trim()).join(', ') : '';
+        lines.push(`  Situação: ${a.stamp || '(não respondido)'}${extraText ? ' — '+extraText : ''}`);
         if(a.obs && a.obs.trim()) lines.push(`  Obs: ${a.obs}`);
       }
     });
