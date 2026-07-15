@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Inspeção Predial">
+<meta name="apple-mobile-web-app-title" content="Correição Predial">
 <meta name="theme-color" content="#152F44">
 <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAIAAADdvvtQAAAEmklEQVR4nO3cwVHkQAxGYbFFCsSxSWwYnDkQEAfOBLqHraJcw9jr8S+ppe73BcAM7kdbzYCfXn7/MeCqX6PfAHojIEgICBICgoSAICEgSAgIEgKChIAgISBICAgSAoKEgCAhIEgICBICgoSAICEgSAgIEgKChIAgISBICAiS5/yXfP98zX/RdXy8fWW+3FPaPxbSTbKckjICIp2BojMKn4GoZ6zo6x8bEPVUELoKgQFRTx1xaxE1Ax2/4+STwjryL3tIQHvfBt2kSVsC/1sY9VSwd7Xd72XOAVFPHTkNZXyUQT2jJFx5z4Dupk09Y929/o6bUOwORD0VhK4Cn8ZD4hYQvzbsxWu9Ancg7l91xK0FtzBICAgSAoKEgCAhIEgICBICgoSAICEgSAgIEgKChIAgISBICAgSAoKEgCAhIEgICBICqqjRH5gTUDn/6unSEAHVsu2mRUMEVNr752vxjAiokL1WKjdEQFUcV1K2IQIq4UwfNRsioPHOl1FwJCKgwS4EUaohAuqn1EMHCGikC3tJqXqMgAaaoB4joFFKzTEKAhrgWj0Ftx8joHwz1WME1ELZeoyAks0xOG8RUJ756jECSjPNsesGAWWYbHDeIqBwE9djBFRTl3qMgKJNOThvEVCg6esxAooz67HrBgGFmHtw3iIgf+vUYwRURNN6jIDcrTA4bxGQp9XqMQJytMix6wYB+VhqcN4iIAfL1mMENMoc9RgB6RYcnLcISLJ4PUZAijWPXTcI6KKVB+et3gGN2gOo51vjgHo9zXTKeqxvQAOfZsrgvNUyoJ9LmNYQ9dzoF9DAR5l2uV1mahbQwEeZMjjf1SmggY8ypZ49bQJ66FGmoe/kpBXqsS4BPdqEb0MMzgcaBHStBq+GqOdYg4Aur4feUJG7YWUNArJBDTE4n9EjIEtviHpOahOQDb2XnbFgPdYrIMtaJAbn85oFZFeXKvTXSMvWYx0DssiGOHY9qmVAFtMQg/MFXQMy74ao55rGAVn8PBTx6pPpHZA5NcTgfFn7gExuiHoUMwRkQkMcu0STBGSJuwLbz9Y8AeWgnhtTBRS9utTz01QBWeQaU89dswVkMStNPXsmDMhY70RzBmSuDZHjgWkDMqeFp55jMwdk8vJTz39NHpAJEVDPGfMHZJdSoJ6TlgjICCLMKgHZIw1R23kLBWTnyqCeh6wVkB328fH2RT2PWi4g2wmFdK55Hv0GhqEYFyvuQHBEQJAQECQEBAkBQUJAkBAQJAQECQFBQkCQEBAkBAQJAUFCQJAQECQEBAkBQUJAkAQGxOMH64hbC7eA+BPjXrzWi1sYJLEBcRerIHQVPAO6uyvS0Fh3r7/jvJFxC6OhURKuvHNAe2nTUL69a+573PHfgWiogpx6zOzp5fcf36/4z3EunPmD5F/2qICMLaeYoB/awCGabaaOuLWIPYXRUAWhqxB+jKehsaKvf+AMdIORKFnOj25eQN8oKVTylj8gIMyET+MhISBICAgSAoKEgCAhIEgICBICgoSAICEgSAgIEgKChIAgISBICAgSAoKEgCAhIEgICBICgoSAICEgSP4CgqGGWuTVEC4AAAAASUVORK5CYII=">
-<title>Checklist de Inspeção Predial</title>
+<title>Checklist de Correição Predial</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
 
@@ -562,7 +562,7 @@ header h1{
 <div id="print-report-wrap"><div class="pr-page" id="print-report"></div></div>
 
 <header>
-  <div class="eyebrow tag">Corregedoria &middot; Inspeção Predial</div>
+  <div class="eyebrow tag">Corregedoria &middot; Correição Predial</div>
   <h1 id="unit-title">Novo checklist</h1>
   <div class="progress-wrap">
     <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
@@ -603,7 +603,7 @@ header h1{
 
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
-    <h2>Resumo da inspeção</h2>
+    <h2>Resumo da Correição</h2>
     <pre id="report-text"></pre>
     <div class="modal-actions">
       <button style="background:#F1F3F2;color:var(--ink);" onclick="closeReport()">Fechar</button>
@@ -1012,8 +1012,8 @@ function buildReportHTML(){
   let html = `
     <div class="pr-header">
       <div>
-        <div class="pr-eyebrow">Corregedoria &middot; Inspeção Predial</div>
-        <div class="pr-title">${escapeHtml(u.nome || u.comarca || 'Checklist de Inspeção')}</div>
+        <div class="pr-eyebrow">Corregedoria &middot; Correição Predial</div>
+        <div class="pr-title">${escapeHtml(u.nome || u.comarca || 'Checklist de Correição')}</div>
       </div>
       <div class="pr-stamp-summary">
         <span class="big">${done}/${total}</span>
@@ -1097,11 +1097,11 @@ function buildDocxDocument(){
   const children = [];
 
   children.push(new Paragraph({
-    children:[ new TextRun({ text:'CORREGEDORIA · INSPEÇÃO PREDIAL', bold:true, color:'234E70', size:16 }) ],
+    children:[ new TextRun({ text:'CORREGEDORIA · Correição PREDIAL', bold:true, color:'234E70', size:16 }) ],
     spacing:{ after:60 }
   }));
   children.push(new Paragraph({
-    children:[ new TextRun({ text: u.nome || u.comarca || 'Checklist de Inspeção', bold:true, color:'152F44', size:44 }) ],
+    children:[ new TextRun({ text: u.nome || u.comarca || 'Checklist de Correição', bold:true, color:'152F44', size:44 }) ],
     spacing:{ after:60 }
   }));
   children.push(new Paragraph({
@@ -1243,7 +1243,7 @@ function generatePDF(){
 function buildReportText(){
   const u = state.unit;
   let lines = [];
-  lines.push('CHECKLIST DE INSPEÇÃO PREDIAL');
+  lines.push('CHECKLIST DE Correição PREDIAL');
   lines.push('='.repeat(32));
   lines.push(`Comarca: ${u.comarca||'-'}`);
   lines.push(`Fórum: ${u.nome||'-'}`);
