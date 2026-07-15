@@ -1004,6 +1004,13 @@ function stampBadgeClass(it, stampValue){
   return 'pr-badge-empty';
 }
 
+function reportTitle(u){
+  const comarca = u.comarca && u.comarca.trim();
+  const nome = u.nome && u.nome.trim();
+  if(comarca && nome) return `${comarca} - ${nome}`;
+  return comarca || nome || 'Checklist de Inspeção';
+}
+
 function buildReportHTML(){
   const u = state.unit;
   const {total, done} = countAnswerable();
@@ -1013,7 +1020,7 @@ function buildReportHTML(){
     <div class="pr-header">
       <div>
         <div class="pr-eyebrow">Corregedoria &middot; Inspeção Predial</div>
-        <div class="pr-title">${escapeHtml(u.nome || u.comarca || 'Checklist de Inspeção')}</div>
+        <div class="pr-title">${escapeHtml(reportTitle(u))}</div>
       </div>
       <div class="pr-stamp-summary">
         <span class="big">${done}/${total}</span>
@@ -1101,7 +1108,7 @@ function buildDocxDocument(){
     spacing:{ after:80 }
   }));
   children.push(new Paragraph({
-    children:[ new TextRun({ text: u.nome || u.comarca || 'Checklist de Inspeção', bold:true, color:'152F44', size:44 }) ],
+    children:[ new TextRun({ text: reportTitle(u), bold:true, color:'152F44', size:44 }) ],
     spacing:{ after:60 }
   }));
   children.push(new Paragraph({
