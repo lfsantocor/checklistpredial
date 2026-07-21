@@ -319,12 +319,24 @@ header h1{
 }
 .photo-check-item{
   display:flex;
-  align-items:center;
-  gap:12px;
+  flex-direction:column;
+  gap:8px;
   padding:12px 16px;
   border-bottom:1px solid var(--line);
 }
 .photo-check-item:last-child{border-bottom:none;}
+.photo-check-item .top-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.photo-check-item .bottom-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
 .photo-check-item .label{flex:1; font-size:13px;}
 .photo-check-item .thumb-empty{
   width:52px;height:52px;
@@ -333,6 +345,26 @@ header h1{
   display:flex;align-items:center;justify-content:center;
   color:var(--ink-soft);
   font-size:10px;
+}
+.photo-confirm-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 12px;
+  border-radius:8px;
+  border:1.5px solid var(--line);
+  background:#fff;
+  color:var(--ink-soft);
+  font-size:12px;
+  font-family:'IBM Plex Sans',sans-serif;
+  font-weight:500;
+  cursor:pointer;
+}
+.photo-confirm-btn.confirmed{
+  background:var(--ok-bg);
+  border-color:var(--ok);
+  color:var(--ok);
+  font-weight:600;
 }
 
 /* TEXT-ONLY ITEM */
@@ -683,7 +715,8 @@ const PHOTO_ITEMS = [
 let state = {
   unit:{ comarca:'', nome:'', endereco:'', juiz:'', secretario:'', servidores:'', data:'' },
   answers:{},   // itemId -> { stamp, obs, extra }
-  photos:{}     // photoLabel -> count (in-memory only per session)
+  photos:{},    // photoLabel -> count (photo taken)
+  photoConfirmed:{}  // photoLabel -> boolean (confirmed even without photo)
 };
 let saveTimer = null;
 
@@ -777,23 +810,31 @@ function renderItem(it){
 function renderPhotos(){
   const body = document.getElementById('photo-body');
   body.innerHTML = PHOTO_ITEMS.map((label,idx)=>{
-    const count = state.photos[label] || 0;
-    const thumb = count>0
-      ? `<div style="position:relative;">
-           <div style="width:52px;height:52px;border-radius:6px;background:var(--ok-bg);border:1px solid var(--ok);display:flex;align-items:center;justify-content:center;color:var(--ok);font-size:18px;">✓</div>
-         </div>`
+    const taken = (state.photos[label] || 0) > 0;
+    const confirmed = !!(state.photoConfirmed && state.photoConfirmed[label]);
+    const thumb = taken
+      ? `<div style="width:52px;height:52px;border-radius:6px;background:var(--ok-bg);border:1px solid var(--ok);display:flex;align-items:center;justify-content:center;color:var(--ok);font-size:18px;">✓</div>`
       : `<div class="thumb-empty">sem foto</div>`;
     return `
       <div class="photo-check-item">
-        <div class="label">${label}</div>
-        ${thumb}
-        <input type="file" accept="image/*" capture="environment" id="file-${idx}" style="display:none" onchange="onPhoto('${label.replace(/'/g,"\\'")}', ${idx})">
-        <button class="photo-btn" onclick="document.getElementById('file-${idx}').click()">${count>0? 'Refazer':'Câmera'}</button>
+        <div class="top-row">
+          <div class="label">${label}</div>
+          ${thumb}
+        </div>
+        <div class="bottom-row">
+          <button type="button" class="photo-confirm-btn ${confirmed ? 'confirmed' : ''}" onclick="onConfirmPhoto('${label.replace(/'/g,"\\'")}', ${!confirmed}, this)">${confirmed ? '✓ Confirmado' : 'Confirmar'}</button>
+          <input type="file" accept="image/*" capture="environment" id="file-${idx}" style="display:none" onchange="onPhoto('${label.replace(/'/g,"\\'")}', ${idx})">
+          <button class="photo-btn" onclick="document.getElementById('file-${idx}').click()">${taken? 'Refazer':'Câmera'}</button>
+        </div>
       </div>
     `;
   }).join('');
-  const totalPhotos = Object.values(state.photos).filter(c=>c>0).length;
-  document.getElementById('photo-count').textContent = `${totalPhotos}/${PHOTO_ITEMS.length}`;
+  updatePhotoCount();
+}
+
+function updatePhotoCount(){
+  const totalDone = PHOTO_ITEMS.filter(label => (state.photos[label]||0) > 0 || (state.photoConfirmed && state.photoConfirmed[label])).length;
+  document.getElementById('photo-count').textContent = `${totalDone}/${PHOTO_ITEMS.length}`;
 }
 
 function onPhoto(label, idx){
@@ -803,6 +844,18 @@ function onPhoto(label, idx){
     renderPhotos();
     scheduleSave();
   }
+}
+
+function onConfirmPhoto(label, newValue, btnEl){
+  state.photoConfirmed = state.photoConfirmed || {};
+  state.photoConfirmed[label] = newValue;
+  if(btnEl){
+    btnEl.classList.toggle('confirmed', newValue);
+    btnEl.textContent = newValue ? '✓ Confirmado' : 'Confirmar';
+    btnEl.setAttribute('onclick', `onConfirmPhoto('${label.replace(/'/g,"\\'")}', ${!newValue}, this)`);
+  }
+  updatePhotoCount();
+  scheduleSave();
 }
 
 function findItemById(id){
@@ -842,7 +895,17 @@ function setStamp(itemId, label, btnEl){
   const it = findItemById(itemId);
   if(it && it.extra){
     const extraDiv = document.getElementById(`extra-${itemId}`);
-    if(extraDiv) extraDiv.style.display = (newVal === it.extra.showOn) ? 'block' : 'none';
+    if(extraDiv){
+      extraDiv.style.display = (newVal === it.extra.showOn) ? 'block' : 'none';
+      const sectionBody = extraDiv.closest('.section-body');
+      if(sectionBody){
+        const prevTransition = sectionBody.style.transition;
+        sectionBody.style.transition = 'none';
+        sectionBody.style.maxHeight = (sectionBody.scrollHeight + 40) + 'px';
+        void sectionBody.offsetHeight;
+        sectionBody.style.transition = prevTransition;
+      }
+    }
   }
 
   updateSectionCount(itemId);
@@ -855,6 +918,33 @@ function setText(itemId, val){
   updateProgress();
   scheduleSave();
 }
+function renderExtraFieldDOM(itemId){
+  const it = findItemById(itemId);
+  if(!it || !it.extra) return;
+  const container = document.getElementById(`extra-${itemId}`);
+  if(!container) return;
+  const a = state.answers[itemId] || {};
+  const list = (a.extraList && a.extraList.length) ? a.extraList : [''];
+  const rows = list.map((val, idx) => `
+    <div class="extra-row">
+      <input placeholder="${it.extra.label}" value="${escapeHtml(val)}" oninput="setExtraAt('${itemId}', ${idx}, this.value)">
+      ${list.length > 1 ? `<button type="button" class="extra-remove" onclick="removeExtraField('${itemId}', ${idx})">&times;</button>` : ''}
+    </div>
+  `).join('');
+  container.innerHTML = rows + `<button type="button" class="extra-add-btn" onclick="addExtraField('${itemId}')">+ Adicionar chamado</button>`;
+
+  // Resize the parent collapsible section instantly (no animation) so new
+  // rows/buttons are never clipped by the old collapsed height.
+  const sectionBody = container.closest('.section-body');
+  if(sectionBody){
+    const prevTransition = sectionBody.style.transition;
+    sectionBody.style.transition = 'none';
+    sectionBody.style.maxHeight = (sectionBody.scrollHeight + 40) + 'px';
+    void sectionBody.offsetHeight;
+    sectionBody.style.transition = prevTransition;
+  }
+}
+
 function setExtraAt(itemId, idx, val){
   state.answers[itemId] = state.answers[itemId] || {};
   if(!state.answers[itemId].extraList || !state.answers[itemId].extraList.length) state.answers[itemId].extraList = [''];
@@ -862,20 +952,20 @@ function setExtraAt(itemId, idx, val){
   scheduleSave();
 }
 function addExtraField(itemId){
+  if(document.activeElement) document.activeElement.blur();
   state.answers[itemId] = state.answers[itemId] || {};
   if(!state.answers[itemId].extraList || !state.answers[itemId].extraList.length) state.answers[itemId].extraList = [''];
   state.answers[itemId].extraList.push('');
-  renderSections();
-  reopenAll();
+  renderExtraFieldDOM(itemId);
   scheduleSave();
 }
 function removeExtraField(itemId, idx){
+  if(document.activeElement) document.activeElement.blur();
   state.answers[itemId] = state.answers[itemId] || {};
   if(!state.answers[itemId].extraList || !state.answers[itemId].extraList.length) state.answers[itemId].extraList = [''];
   state.answers[itemId].extraList.splice(idx, 1);
   if(state.answers[itemId].extraList.length === 0) state.answers[itemId].extraList = [''];
-  renderSections();
-  reopenAll();
+  renderExtraFieldDOM(itemId);
   scheduleSave();
 }
 
@@ -924,12 +1014,14 @@ function setServidorAt(idx, val){
   scheduleSave();
 }
 function addServidorField(){
+  if(document.activeElement) document.activeElement.blur();
   if(!state.unit.servidoresList || !state.unit.servidoresList.length) state.unit.servidoresList = [''];
   state.unit.servidoresList.push('');
   renderServidoresList();
   scheduleSave();
 }
 function removeServidorField(idx){
+  if(document.activeElement) document.activeElement.blur();
   if(!state.unit.servidoresList || !state.unit.servidoresList.length) state.unit.servidoresList = [''];
   state.unit.servidoresList.splice(idx, 1);
   if(state.unit.servidoresList.length === 0) state.unit.servidoresList = [''];
@@ -955,7 +1047,7 @@ async function loadState(){
     const raw = localStorage.getItem('current-inspection');
     if(raw){
       const loaded = JSON.parse(raw);
-      state = Object.assign({unit:{},answers:{},photos:{}}, loaded);
+      state = Object.assign({unit:{},answers:{},photos:{},photoConfirmed:{}}, loaded);
     }
   }catch(e){ /* nothing saved yet */ }
   ['comarca','nome','endereco','juiz','secretario','data'].forEach(key=>{
@@ -973,7 +1065,7 @@ async function loadState(){
 
 async function confirmReset(){
   if(confirm('Iniciar nova visita? Os dados atuais serão substituídos (o histórico local não é apagado, mas esta tela será limpa).')){
-    state = { unit:{comarca:'',nome:'',endereco:'',juiz:'',secretario:'',servidoresList:[''],data:''}, answers:{}, photos:{} };
+    state = { unit:{comarca:'',nome:'',endereco:'',juiz:'',secretario:'',servidoresList:[''],data:''}, answers:{}, photos:{}, photoConfirmed:{} };
     ['comarca','nome','endereco','juiz','secretario','data'].forEach(key=>{
       document.getElementById('f-'+key).value = '';
     });
@@ -1011,10 +1103,30 @@ function reportTitle(u){
   return comarca || nome || 'Checklist de Inspeção';
 }
 
+function photoStatus(label){
+  const taken = (state.photos[label] || 0) > 0;
+  const confirmed = !!(state.photoConfirmed && state.photoConfirmed[label]);
+  if(taken) return 'foto';
+  if(confirmed) return 'confirmado';
+  return 'pendente';
+}
+function photoDoneCount(){
+  return PHOTO_ITEMS.filter(p => photoStatus(p) !== 'pendente').length;
+}
+
+function nl2br(text){
+  return escapeHtml(text).replace(/\n/g, '<br>');
+}
+function servidoresListHtml(u){
+  const list = (u.servidoresList || []).filter(v=>v && v.trim());
+  if(!list.length) return '—';
+  return list.map(v=>escapeHtml(v)).join('<br>');
+}
+
 function buildReportHTML(){
   const u = state.unit;
   const {total, done} = countAnswerable();
-  const totalPhotos = Object.values(state.photos).filter(c=>c>0).length;
+  const totalPhotos = photoDoneCount();
 
   let html = `
     <div class="pr-header">
@@ -1033,7 +1145,7 @@ function buildReportHTML(){
       <div class="full"><span class="k">Endereço</span><span class="v">${escapeHtml(u.endereco) || '—'}</span></div>
       <div><span class="k">Juiz Diretor do Foro</span><span class="v">${escapeHtml(u.juiz) || '—'}</span></div>
       <div><span class="k">Secretário(a) de gestão</span><span class="v">${escapeHtml(u.secretario) || '—'}</span></div>
-      <div class="full"><span class="k">Servidores</span><span class="v">${escapeHtml(servidoresText(u)) || '—'}</span></div>
+      <div class="full"><span class="k">Servidores</span><span class="v">${servidoresListHtml(u)}</span></div>
     </div>
   `;
 
@@ -1046,19 +1158,24 @@ function buildReportHTML(){
         html += `
           <div class="pr-text-item">
             <div class="q">${escapeHtml(it.q)}</div>
-            <div class="a ${val ? '' : 'empty'}">${val ? escapeHtml(a.obs) : '(não preenchido)'}</div>
+            <div class="a ${val ? '' : 'empty'}">${val ? nl2br(a.obs) : '(não preenchido)'}</div>
           </div>
         `;
       } else {
         const badgeClass = stampBadgeClass(it, a.stamp);
         const badgeLabel = a.stamp || 'Não respondido';
-        let obsLine = '';
-        const extraText = a.extraList ? a.extraList.filter(v=>v && v.trim()).join(', ') : '';
-        if(extraText) obsLine += `Números: ${escapeHtml(extraText)}. `;
-        if(a.obs && a.obs.trim()) obsLine += escapeHtml(a.obs);
+        const extraList = a.extraList ? a.extraList.filter(v=>v && v.trim()) : [];
+        let extraBlock = '';
+        if(extraList.length){
+          extraBlock = `<span class="obs">Números:<br>${extraList.map(v=>escapeHtml(v)).join('<br>')}</span>`;
+        }
+        let obsBlock = '';
+        if(a.obs && a.obs.trim()){
+          obsBlock = `<span class="obs">${nl2br(a.obs)}</span>`;
+        }
         html += `
           <div class="pr-item">
-            <div class="q">${escapeHtml(it.q)}${obsLine ? `<span class="obs">${obsLine}</span>` : ''}</div>
+            <div class="q">${escapeHtml(it.q)}${extraBlock}${obsBlock}</div>
             <span class="pr-badge ${badgeClass}">${escapeHtml(badgeLabel)}</span>
           </div>
         `;
@@ -1068,11 +1185,12 @@ function buildReportHTML(){
 
   html += `<div class="pr-section-title">FOTO — Relatório Fotográfico (${totalPhotos}/${PHOTO_ITEMS.length})</div><div class="pr-photo-grid">`;
   PHOTO_ITEMS.forEach(p=>{
-    const done = state.photos[p] > 0;
+    const status = photoStatus(p);
+    const note = status === 'confirmado' ? ' <em style="color:#B5822A;font-size:10px;">(confirmado sem foto)</em>' : '';
     html += `
       <div class="pr-photo-item">
-        <div class="pr-photo-check ${done ? 'done' : ''}">${done ? '✓' : ''}</div>
-        <span>${escapeHtml(p)}</span>
+        <div class="pr-photo-check ${status!=='pendente' ? 'done' : ''}">${status!=='pendente' ? '✓' : ''}</div>
+        <span>${escapeHtml(p)}${note}</span>
       </div>
     `;
   });
@@ -1094,11 +1212,21 @@ function statusColor(it, stampValue){
   return '9AA5AC';
 }
 
+function multilineRuns(text, styleOpts){
+  const lines = text.split('\n');
+  const runs = [];
+  lines.forEach((line, i)=>{
+    if(i > 0) runs.push(new docx.TextRun({ break: 1 }));
+    runs.push(new docx.TextRun(Object.assign({ text: line }, styleOpts)));
+  });
+  return runs;
+}
+
 function buildDocxDocument(){
   const { Document, Paragraph, TextRun, BorderStyle, AlignmentType } = docx;
   const u = state.unit;
   const {total, done} = countAnswerable();
-  const totalPhotos = Object.values(state.photos).filter(c=>c>0).length;
+  const totalPhotos = photoDoneCount();
   const hairline = { bottom:{ color:'DBE1DD', space:6, style:BorderStyle.SINGLE, size:4 } };
 
   const children = [];
@@ -1126,12 +1254,26 @@ function buildDocxDocument(){
       spacing:{ after:80 }
     }));
   }
+  function metaListBlock(label, values){
+    children.push(new Paragraph({
+      children:[ new TextRun({ text:`${label}:`, bold:true, color:'8A9299', size:19 }) ],
+      spacing:{ after:40 }
+    }));
+    if(values.length===0){
+      children.push(new Paragraph({ children:[ new TextRun({text:'—', color:'16232E', size:19}) ], spacing:{after:80} }));
+    } else {
+      children.push(new Paragraph({
+        children: multilineRuns(values.join('\n'), {color:'16232E', size:19}),
+        spacing:{ after:80 }
+      }));
+    }
+  }
   metaLine('Comarca', u.comarca);
   metaLine('Data da visita', u.data);
   metaLine('Endereço', u.endereco);
   metaLine('Juiz Diretor do Foro', u.juiz);
   metaLine('Secretário(a) de gestão', u.secretario);
-  metaLine('Servidores', servidoresText(u));
+  metaListBlock('Servidores', (u.servidoresList || []).filter(v=>v && v.trim()));
   children.push(new Paragraph({ text:'', border:hairline, spacing:{ after:200 } }));
 
   SECTIONS.forEach(sec=>{
@@ -1150,26 +1292,34 @@ function buildDocxDocument(){
           spacing:{ after:40 }
         }));
         children.push(new Paragraph({
-          children:[ new TextRun({ text: val ? a.obs : '(não preenchido)', italics: !val, color: val ? '16232E' : '9AA5AC', size:19 }) ],
+          children: val ? multilineRuns(a.obs, {color:'16232E', size:19}) : [ new TextRun({ text:'(não preenchido)', italics:true, color:'9AA5AC', size:19 }) ],
           spacing:{ after:160 }
         }));
       } else {
         const color = statusColor(it, a.stamp);
         const badgeLabel = a.stamp || 'Não respondido';
+        const extraList = a.extraList ? a.extraList.filter(v=>v && v.trim()) : [];
+        const hasObs = a.obs && a.obs.trim();
         children.push(new Paragraph({
           children:[
             new TextRun({ text: it.q + '  —  ', color:'16232E', size:20 }),
             new TextRun({ text: badgeLabel.toUpperCase(), bold:true, color, size:19 }),
           ],
-          spacing:{ after: (a.extraList && a.extraList.some(v=>v&&v.trim())) || (a.obs && a.obs.trim()) ? 30 : 140 }
+          spacing:{ after: (extraList.length || hasObs) ? 30 : 140 }
         }));
-        const extraText = a.extraList ? a.extraList.filter(v=>v && v.trim()).join(', ') : '';
-        let obsLine = '';
-        if(extraText) obsLine += `Números: ${extraText}. `;
-        if(a.obs && a.obs.trim()) obsLine += a.obs;
-        if(obsLine){
+        if(extraList.length){
           children.push(new Paragraph({
-            children:[ new TextRun({ text:obsLine, italics:true, color:'777777', size:18 }) ],
+            children:[
+              new TextRun({ text:'Números:', italics:true, color:'777777', size:18 }),
+              new TextRun({ break:1 }),
+              ...multilineRuns(extraList.join('\n'), {italics:true, color:'777777', size:18})
+            ],
+            spacing:{ after: hasObs ? 30 : 140 }
+          }));
+        }
+        if(hasObs){
+          children.push(new Paragraph({
+            children: multilineRuns(a.obs, {italics:true, color:'777777', size:18}),
             spacing:{ after:140 }
           }));
         }
@@ -1183,9 +1333,10 @@ function buildDocxDocument(){
     spacing:{ before:320, after:160 },
   }));
   PHOTO_ITEMS.forEach(p=>{
-    const donePhoto = state.photos[p] > 0;
+    const status = photoStatus(p);
+    const label = status === 'confirmado' ? `${p}  (confirmado sem foto)` : p;
     children.push(new Paragraph({
-      children:[ new TextRun({ text:(donePhoto ? '☑  ' : '☐  ') + p, color: donePhoto ? '3A7D5C' : '16232E', size:20 }) ],
+      children:[ new TextRun({ text:(status!=='pendente' ? '☑  ' : '☐  ') + label, italics: status==='confirmado', color: status!=='pendente' ? '3A7D5C' : '16232E', size:20 }) ],
       spacing:{ after:60 }
     }));
   });
@@ -1246,7 +1397,13 @@ function buildReportText(){
   lines.push(`Endereço: ${u.endereco||'-'}`);
   lines.push(`Juiz Diretor do Foro: ${u.juiz||'-'}`);
   lines.push(`Secretário(a) de gestão: ${u.secretario||'-'}`);
-  lines.push(`Servidores: ${servidoresText(u)||'-'}`);
+  const servidoresList = (u.servidoresList || []).filter(v=>v && v.trim());
+  lines.push('Servidores:');
+  if(servidoresList.length){
+    servidoresList.forEach(nome => lines.push(`  - ${nome}`));
+  } else {
+    lines.push('  -');
+  }
   lines.push(`Data da visita: ${u.data||'-'}`);
   lines.push('');
   SECTIONS.forEach(sec=>{
@@ -1259,8 +1416,12 @@ function buildReportText(){
         lines.push(`  Resposta: ${a.obs && a.obs.trim() ? a.obs : '(não preenchido)'}`);
       } else {
         lines.push(`• ${it.q}`);
-        const extraText = a.extraList ? a.extraList.filter(v=>v && v.trim()).join(', ') : '';
-        lines.push(`  Situação: ${a.stamp || '(não respondido)'}${extraText ? ' — '+extraText : ''}`);
+        lines.push(`  Situação: ${a.stamp || '(não respondido)'}`);
+        const extraList = a.extraList ? a.extraList.filter(v=>v && v.trim()) : [];
+        if(extraList.length){
+          lines.push('  Números:');
+          extraList.forEach(v => lines.push(`    - ${v}`));
+        }
         if(a.obs && a.obs.trim()) lines.push(`  Obs: ${a.obs}`);
       }
     });
@@ -1269,7 +1430,9 @@ function buildReportText(){
   lines.push('RELATÓRIO FOTOGRÁFICO');
   lines.push('-'.repeat(32));
   PHOTO_ITEMS.forEach(p=>{
-    lines.push(`[${state.photos[p] ? 'x' : ' '}] ${p}`);
+    const status = photoStatus(p);
+    const suffix = status === 'confirmado' ? ' (confirmado sem foto)' : '';
+    lines.push(`[${status!=='pendente' ? 'x' : ' '}] ${p}${suffix}`);
   });
   return lines.join('\n');
 }
