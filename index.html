@@ -651,6 +651,13 @@ header h1{
 const STAMP_LABELS_DEFAULT = ['Sim','Não','Prejudicado'];
 const STAMP_LABELS_ACESSO = ['Comum','Segregado','Prejudicado'];
 
+/* Rótulos padrão do campo complementar (it.extra); cada item pode
+   sobrescrever com addLabel (botão) e reportLabel (relatórios). */
+const EXTRA_ADD_LABEL_DEFAULT = 'Adicionar chamado';
+const EXTRA_REPORT_LABEL_DEFAULT = 'Números';
+function extraAddLabel(it){ return (it.extra && it.extra.addLabel) || EXTRA_ADD_LABEL_DEFAULT; }
+function extraReportLabel(it){ return (it.extra && it.extra.reportLabel) || EXTRA_REPORT_LABEL_DEFAULT; }
+
 const SECTIONS = [
   { id:'s1', num:'01', title:'Infraestrutura e Conservação (Estado Físico)', items:[
     { id:'i1', q:'Fachada: pintura está em dia?', type:'stamp' },
@@ -666,6 +673,7 @@ const SECTIONS = [
     { id:'i11', q:'Sustentabilidade: placas solares operantes?', type:'stamp' },
     { id:'i12', q:'Sustentabilidade: há lixeiras de coleta seletiva?', type:'stamp' },
     { id:'i13', q:'Manutenção SEI: existem números de chamados anotados para reparos urgentes?', type:'stamp', extra:{label:'Números dos chamados', showOn:'Sim'} },
+    { id:'i44', q:'Corpo de Bombeiros: a unidade dispõe de alvará/Auto de Vistoria (AVCB ou CLCB) dentro do prazo de validade?', type:'stamp', extra:{label:'Nº do alvará e validade', showOn:'Sim', addLabel:'Adicionar alvará', reportLabel:'Alvará do Corpo de Bombeiros'} },
   ]},
   { id:'s2', num:'02', title:'Acessibilidade (Res. CNJ 401/2021 e 41/2023)', items:[
     { id:'i14', q:'Rampas: há acesso autônomo da calçada até o interior?', type:'stamp' },
@@ -794,7 +802,7 @@ function renderItem(it){
     extraHtml = `
       <div class="extra-field" style="display:${showExtra?'block':'none'}" id="extra-${it.id}">
         ${rows}
-        <button type="button" class="extra-add-btn" onclick="addExtraField('${it.id}')">+ Adicionar chamado</button>
+        <button type="button" class="extra-add-btn" onclick="addExtraField('${it.id}')">+ ${extraAddLabel(it)}</button>
       </div>`;
   }
   return `
@@ -931,7 +939,7 @@ function renderExtraFieldDOM(itemId){
       ${list.length > 1 ? `<button type="button" class="extra-remove" onclick="removeExtraField('${itemId}', ${idx})">&times;</button>` : ''}
     </div>
   `).join('');
-  container.innerHTML = rows + `<button type="button" class="extra-add-btn" onclick="addExtraField('${itemId}')">+ Adicionar chamado</button>`;
+  container.innerHTML = rows + `<button type="button" class="extra-add-btn" onclick="addExtraField('${itemId}')">+ ${extraAddLabel(it)}</button>`;
 
   // Resize the parent collapsible section instantly (no animation) so new
   // rows/buttons are never clipped by the old collapsed height.
@@ -1167,7 +1175,7 @@ function buildReportHTML(){
         const extraList = a.extraList ? a.extraList.filter(v=>v && v.trim()) : [];
         let extraBlock = '';
         if(extraList.length){
-          extraBlock = `<span class="obs">Números:<br>${extraList.map(v=>escapeHtml(v)).join('<br>')}</span>`;
+          extraBlock = `<span class="obs">${escapeHtml(extraReportLabel(it))}:<br>${extraList.map(v=>escapeHtml(v)).join('<br>')}</span>`;
         }
         let obsBlock = '';
         if(a.obs && a.obs.trim()){
@@ -1310,7 +1318,7 @@ function buildDocxDocument(){
         if(extraList.length){
           children.push(new Paragraph({
             children:[
-              new TextRun({ text:'Números:', italics:true, color:'777777', size:18 }),
+              new TextRun({ text:`${extraReportLabel(it)}:`, italics:true, color:'777777', size:18 }),
               new TextRun({ break:1 }),
               ...multilineRuns(extraList.join('\n'), {italics:true, color:'777777', size:18})
             ],
@@ -1419,7 +1427,7 @@ function buildReportText(){
         lines.push(`  Situação: ${a.stamp || '(não respondido)'}`);
         const extraList = a.extraList ? a.extraList.filter(v=>v && v.trim()) : [];
         if(extraList.length){
-          lines.push('  Números:');
+          lines.push(`  ${extraReportLabel(it)}:`);
           extraList.forEach(v => lines.push(`    - ${v}`));
         }
         if(a.obs && a.obs.trim()) lines.push(`  Obs: ${a.obs}`);
