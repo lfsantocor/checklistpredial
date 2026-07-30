@@ -136,7 +136,7 @@ header h1{
   font-family:'IBM Plex Mono',monospace;
   letter-spacing:.02em;
 }
-.field-row input, .field-row textarea{
+.field-row input, .field-row textarea, .field-row select{
   width:100%;
   padding:9px 10px;
   border:1px solid var(--line);
@@ -146,11 +146,18 @@ header h1{
   background:#FBFCFB;
   color:var(--ink);
 }
-.field-row input:focus, .field-row textarea:focus{
+.field-row select{
+  -webkit-appearance:none;appearance:none;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%235B6B74' d='M6 8 0 0h12z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:30px;
+}
+.field-row select:disabled{opacity:.55;cursor:default;background-color:#F1F3F2;}
+.field-row input:focus, .field-row textarea:focus, .field-row select:focus{
   outline:2px solid var(--primary);
   outline-offset:1px;
   background:#fff;
 }
+.autofill-note{font-size:11px;color:var(--ink-soft);margin:-4px 0 10px;font-family:'IBM Plex Mono',monospace;}
 
 /* SECTIONS */
 .section{
@@ -634,8 +641,12 @@ header h1{
 
 <div class="unit-card">
   <h2 class="tag">Dados da unidade visitada</h2>
-  <div class="field-row"><label>Comarca</label><input id="f-comarca" placeholder="Ex: São Domingos do Norte"></div>
-  <div class="field-row"><label>Nome oficial do fórum</label><input id="f-nome" placeholder="Ex: Des. José de Barros Wanderley"></div>
+  <div class="field-row"><label>Comarca</label><select id="f-comarca" onchange="onComarcaChange(this.value)"></select></div>
+  <div class="field-row"><label>Nome oficial do fórum</label>
+    <select id="f-nome-sel" onchange="onForumSelect(this.value)"></select>
+    <input id="f-nome" style="margin-top:8px;" placeholder="Selecione acima ou digite o nome do fórum">
+  </div>
+  <div class="autofill-note" id="autofill-note" style="display:none;">↓ Campos preenchidos automaticamente — edite se necessário (inclusive o nome do fórum acima).</div>
   <div class="field-row"><label>Endereço completo</label><textarea id="f-endereco" rows="2" placeholder="Rod. ES 080, Km 44..."></textarea></div>
   <div class="field-row"><label>Juiz Diretor do Foro</label><input id="f-juiz"></div>
   <div class="field-row"><label>Secretário(a) de gestão do Foro</label><input id="f-secretario"></div>
@@ -1023,7 +1034,53 @@ function applyOpenState(){
   });
 }
 
-['comarca','nome','endereco','juiz','secretario','data'].forEach(key=>{
+const FORUNS = [{"m":"Vitória","d":"Fórum Cível de Vitória","end":"Rua Leocádia Pedra dos Santos, nº 80 – Enseada do Suá, 29050-370 - Vitória/ES"},{"m":"Vitória","d":"Fórum Criminal Desembargador José Mathias de Almeida Neto","end":"Avenida Fernando Ferrari, nº 1000 – Mata da Praia, 29015-160 - Vitória/ES"},{"m":"Vila Velha","d":"Fórum Desembargador Annibal de Athayde Lima","end":"Rua Doutor Annor da Silva, nº 191 – Boa Vista II, 29107-355 - Vila Velha/ES"},{"m":"Vila Velha","d":"Fórum da Prainha","end":"Praça Almirante Tamandaré, nº 193 – Prainha, Centro, 29100-970 - Vila Velha/ES"},{"m":"Serra","d":"Fórum Desembargador Antônio José Miguel Feu Rosa","end":"Avenida Carapebus, nº 226 – São Geraldo/Carapina, 29163-392 - Serra/ES"},{"m":"Cariacica","d":"Fórum Doutor Américo Ribeiro Coelho","end":"Rua São João Batista, nº 1000 – Alto Laje, 29151-230 - Cariacica/ES"},{"m":"Viana","d":"Fórum Desembargador Olival Pimentel","end":"Rua Major Domingos Vicente, nº 70 – Centro, 29130-911 - Viana/ES"},{"m":"Viana","d":"Anexo Fórum de Viana (Areinha)","end":"Rua Principal, nº 2-136, 29135-000 - Viana/ES"},{"m":"Guarapari","d":"Fórum Desembargador Gregório Magno","end":"Alameda Francisco Vieira Simões, s/nº – Muquiçaba, 29214-110 - Guarapari/ES"},{"m":"Fundão","d":"Fórum Desembargador Cícero Alves","end":"Rua São José, nº 145 – Centro, 29188-000 - Fundão/ES"},{"m":"Itaguaçu","d":"Fórum Desembargador Getulio Serrano","end":"Rua Vicente Peixoto de Mello, nº 32 – Centro, 29690-000 - Itaguaçu/ES"},{"m":"Itarana","d":"Fórum José Vicente de Sá","end":"Rua Santos Venturini, s/nº – Centro, 29620-000 - Itarana/ES"},{"m":"Santa Leopoldina","d":"Fórum Graça Aranha","end":"Av. Presidente Vargas, nº 1559 – Centro, 29640-000 - Santa Leopoldina/ES"},{"m":"Santa Maria de Jetibá","d":"Fórum Desembargador Homero Mafra","end":"Rua Hermann Miertschink, nº 160 – Centro, 29645-000 - Santa Maria de Jetibá/ES"},{"m":"Santa Teresa","d":"Fórum Juiz Thiers Vellozo","end":"Av. Maria Angélica Vervloet dos Santos, nº 392 – Vale do Canaã, 29650-000 - Santa Teresa/ES"},{"m":"Afonso Cláudio","d":"Fórum Juiz Atahualpa Lessa","end":"Rua José Garcia, nº 32 – Centro, 29600-000 - Afonso Cláudio/ES"},{"m":"Conceição do Castelo","d":"Fórum Juiz Francisco de Menezes Pimentel","end":"Av. José Grillo, nº 166 – Centro, 29370-000 - Conceição do Castelo/ES"},{"m":"Domingos Martins","d":"Fórum Guterres Vale","end":"Av. Presidente Vargas, nº 589 – Centro, 29260-000 - Domingos Martins/ES"},{"m":"Laranja da Terra","d":"Fórum Desembargador Antônio Tapias de Vasconcellos","end":"Av. Luiz Obermüller Filho, nº 85 – Centro, 29615-000 - Laranja da Terra/ES"},{"m":"Marechal Floriano","d":"Fórum Desembargador Cândido Marinho","end":"Av. Arthur Haese, nº 656 – Ed. Jaime Canal, 1º andar, Centro, 29266-000 - Marechal Floriano/ES"},{"m":"Venda Nova do Imigrante","d":"Fórum Desembargador José Vieira Coelho","end":"Av. Evandi Américo Comarela, nº 971 – Marmin, 29375-000 - Venda Nova do Imigrante/ES"},{"m":"Alfredo Chaves","d":"Fórum Desembargador Madeira de Freitas","end":"Av. Getúlio Vargas, nº 969 – Centro, 29240-000 - Alfredo Chaves/ES"},{"m":"Anchieta","d":"Fórum Desembargador Josias Soares","end":"Rodovia do Sol, nº 2539 – Ed. Tramonto Room, Ponta dos Castelhanos, 29230-000 - Anchieta/ES"},{"m":"Iconha","d":"Fórum Desembargador Augusto Affonso Botelho","end":"Rua Muniz Freire, nº 653, 29280-000 - Iconha/ES"},{"m":"Itapemirim","d":"Fórum Desembargador Freitas Barbosa","end":"Rua Melchíades Félix de Souza, nº 200 – Serramar, 29330-000 - Itapemirim/ES"},{"m":"Marataízes","d":"Fórum Juiz José Pinheiro Monteiro","end":"Av. Rubens Rangel, nº 663 – Cidade Nova, 29345-000 - Marataízes/ES"},{"m":"Piúma","d":"Fórum Desembargador Dermeval Lyrio","end":"Praça Oenes Taylor, s/nº – Centro, 29285-000 - Piúma/ES"},{"m":"Presidente Kennedy","d":"Fórum Desembargador Edson Queiroz do Valle","end":"Rua Olegário Fricks, nº 20 – Centro, 29350-000 - Presidente Kennedy/ES"},{"m":"Rio Novo do Sul","d":"Fórum Nilton Thevenard","end":"Rua Muniz Freire, nº 16 – Centro, 29290-000 - Rio Novo do Sul/ES"},{"m":"Apiacá","d":"Fórum Desembargador José Fortunato Ribeiro","end":"Rua Jader Pinto, nº 88 – Boa Vista, 29450-000 - Apiacá/ES"},{"m":"Atílio Vivacqua","d":"Fórum Desembargador Manoel Xavier Paes Barreto Filho","end":"Rua Carolina Fraga, nº 67/69 – Centro, 29490-000 - Atílio Vivacqua/ES"},{"m":"Cachoeiro de Itapemirim","d":"Fórum Desembargador Horta Araújo","end":"Av. Monte Castelo, s/nº – Independência, 29306-500 - Cachoeiro de Itapemirim/ES"},{"m":"Castelo","d":"Fórum Alonso Fernandes de Oliveira","end":"Av. Nossa Senhora da Penha, nº 120 – Centro, 29360-000 - Castelo/ES"},{"m":"Jerônimo Monteiro","d":"Fórum Eurípides Queiróz do Valle","end":"Av. Dr. José Faráh, nº 383 – Centro, 29550-000 - Jerônimo Monteiro/ES"},{"m":"Mimoso do Sul","d":"Fórum Desembargador O'Reilly de Souza","end":"Rua Dr. José Monteiro da Silva, nº 7 – Centro, 29400-000 - Mimoso do Sul/ES"},{"m":"Muqui","d":"Fórum Desembargador José Horácio Costa","end":"Rua Coronel Marcondes, nº 100 – Centro, 29480-000 - Muqui/ES"},{"m":"Vargem Alta","d":"Fórum Desembargador Carlos Soares Pinto Aboudib","end":"Av. Turffy David, s/nº – Centro, 29295-000 - Vargem Alta/ES"},{"m":"Alegre","d":"Fórum Levino Chacon","end":"Rua Emílio Marins, s/nº – Loteamento Albani/Vila do Sul, 29500-000 - Alegre/ES"},{"m":"Bom Jesus do Norte","d":"Fórum Desembargador Vicente Caetano","end":"Rua Carlos Firmo, nº 119 – Centro, 29460-000 - Bom Jesus do Norte/ES"},{"m":"Dores do Rio Preto","d":"Fórum Desembargador Meroveu Pereira Cardoso Júnior","end":"Av. Firmino Dias, nº 428 – Centro, 29580-000 - Dores do Rio Preto/ES"},{"m":"Guaçuí","d":"Fórum Juiz José Tatagiba","end":"Rua Agenor Luiz Tomé, s/nº – Quincas Machado, 29560-000 - Guaçuí/ES"},{"m":"Ibatiba","d":"Fórum Desembargador Epaminondas Amaral","end":"Rua Orly Barros, nº 195 – Novo Horizonte, 29395-000 - Ibatiba/ES"},{"m":"Ibitirama","d":"Fórum Desembargador Victor Emanuel Alcuri","end":"Av. Anísio Ferreira da Silva, nº 54 – Centro, 29540-000 - Ibitirama/ES"},{"m":"Iúna","d":"Fórum Desembargador Waldemar Pereira","end":"Rua Galaos Rius, nº 301 – Centro, 29390-000 - Iúna/ES"},{"m":"Muniz Freire","d":"Fórum Juiz Nilson Feydit","end":"Rua Pedro Deps, nº 54 – Centro, 29380-000 - Muniz Freire/ES"},{"m":"São José do Calçado","d":"Fórum Desembargador Cassiano Castelo","end":"Av. Heber Fonseca, s/nº – João Marcelino de Freitas, 29470-000 - São José do Calçado/ES"},{"m":"Aracruz","d":"Fórum Desembargador João Gonçalves de Medeiros","end":"Rua Osório da Rocha Silva, nº 22 – Paraíso, 29190-256 - Aracruz/ES"},{"m":"Ibiraçu","d":"Fórum Desembargador Farias Santos","end":"Rua Mário Antônio Modenesi, nº 15 – São Cristóvão, 29670-000 - Ibiraçu/ES"},{"m":"João Neiva","d":"Fórum Walter Gustavo Naumann","end":"Av. Presidente Vargas, nº 279 – Centro, 29680-000 - João Neiva/ES"},{"m":"Linhares","d":"Fórum Desembargador Mendes Wanderley","end":"Rua Alair Garcia Duarte, s/nº – Três Barras, 29906-660 - Linhares/ES"},{"m":"Rio Bananal","d":"Fórum Halley Pinheiro Monteiro","end":"Rua João Cipriano, nº 810, 29920-000 - Rio Bananal/ES"},{"m":"Alto Rio Novo","d":"Fórum Desembargador Lourival Almeida","end":"Rua Paulo Martins, nº 276 – Santa Bárbara, 29760-000 - Alto Rio Novo/ES"},{"m":"Baixo Guandú","d":"Fórum Desembargador Otávio Lemgruber","end":"Av. Carlos Medeiros, nº 977 – Centro, 29730-000 - Baixo Guandú/ES"},{"m":"Colatina","d":"Fórum Juiz João Cláudio","end":"Praça Sol Poente, nº 100 – Esplanada, 29702-710 - Colatina/ES"},{"m":"Marilândia","d":"Fórum Desembargador Alfredo Cabral","end":"Rua Luís Catelan, nº 206 – Centro, 29725-000 - Marilândia/ES"},{"m":"Pancas","d":"Fórum Desembargador José Cupertino de Castro Filho","end":"Rua Jovino Nonato da Cunha, nº 295 – Centro, 29750-000 - Pancas/ES"},{"m":"São Domingos do Norte","d":"Fórum Desembargador José de Barros Wanderley","end":"Rod. ES 080, Km 44 (Rod. do Café), s/nº – Emílio Calegari, 29745-000 - São Domingos do Norte/ES"},{"m":"São Gabriel da Palha","d":"Fórum Desembargador Ayrton Martins Lemos","end":"Rua 14 de Maio, nº 131 – Centro, 29780-000 - São Gabriel da Palha/ES"},{"m":"Boa Esperança","d":"Fórum Desembargador Mário da Silva Nunes","end":"Av. Virgílio Simonetti, nº 1206 – Ilmo Covre, 29845-000 - Boa Esperança/ES"},{"m":"Conceição da Barra","d":"Fórum Desembargador Ferreira Coelho","end":"Rua Graciano Neves, nº 292 – Centro, 29660-000 - Conceição da Barra/ES"},{"m":"Jaguaré","d":"Fórum Desembargador Rômulo Finamori","end":"Av. Nove de Agosto, nº 1410 – Centro, 29950-000 - Jaguaré/ES"},{"m":"Pedro Canário","d":"Fórum Desembargador Vicente Vasconcelos","end":"Rua Deodato Vital dos Anjos, s/nº – Bairro Novo Horizonte, 29970-000 - Pedro Canário/ES"},{"m":"Pinheiros","d":"Fórum Desembargador Gilson Vieira de Mendonça","end":"Rua Agenor Luiz Heringer, nº 888 – Centro, 29980-000 - Pinheiros/ES"},{"m":"Montanha","d":"Fórum Desembargador Ayres Xavier da Penha","end":"Av. Antônio Paulino, nº 445 – Centro, 29890-000 - Montanha/ES"},{"m":"Mucurici","d":"Fórum Desembargador Gumercindo de Souza Mendes","end":"Rua Presidente Castelo Branco, s/nº – Centro, 29880-000 - Mucurici/ES"},{"m":"São Mateus","d":"Fórum Desembargador Santos Neves","end":"Av. João Nardoto, nº 140 – Jaqueline, 29936-160 - São Mateus/ES"},{"m":"Água Doce do Norte","d":"Fórum Desembargador Moacir Figueiredo Cortes","end":"Rua Padre Franco, s/nº – Centro, 29820-000 - Água Doce do Norte/ES"},{"m":"Águia Branca","d":"Fórum Desembargador Antonio José","end":"Rua Dr. Warlei Kozarowski, s/nº – Praça dos Três Poderes, 29795-000 - Águia Branca/ES"},{"m":"Barra de São Francisco","d":"Fórum Desembargador Danton Bastos","end":"Rua Des. Danton Bastos, nº 95 – Centro, 29800-000 - Barra de São Francisco/ES"},{"m":"Ecoporanga","d":"Fórum Ministro Pereira de Sampaio","end":"Av. Jurvalin Gerônimo de Souza, nº 987 – Centro, 29850-000 - Ecoporanga/ES"},{"m":"Mantenópolis","d":"Fórum Desembargador Christiano Vieira de Andrade","end":"Praça Dom Luiz, nº 12 – Centro, 29770-000 - Mantenópolis/ES"},{"m":"Nova Venécia","d":"Fórum Doutor Ubaldo Ramalhete Maia","end":"Praça São Marcos, s/nº – Centro, 29830-000 - Nova Venécia/ES"}];
+const COMARCAS_PREDIAL = Array.from(new Set(FORUNS.map(f=>f.m))).sort((a,b)=>a.localeCompare(b,'pt'));
+function opt(v,label,sel){ return `<option value="${String(v).replace(/"/g,'&quot;')}"${sel?' selected':''}>${label}</option>`; }
+function buildComarcaOptions(){
+  const sel=document.getElementById('f-comarca');
+  sel.innerHTML='<option value="">— Selecione a comarca —</option>'+
+    COMARCAS_PREDIAL.map(c=>opt(c,c,state.unit.comarca===c)).join('');
+}
+function buildForumOptions(comarca, selectedDen){
+  const sel=document.getElementById('f-nome-sel');
+  const list=FORUNS.filter(f=>f.m===comarca);
+  if(!comarca){ sel.innerHTML='<option value="">— Selecione a comarca primeiro —</option>'; sel.disabled=true; return; }
+  sel.disabled=false;
+  sel.innerHTML='<option value="">— Selecione o fórum —</option>'+
+    list.map(f=>{ const idx=FORUNS.indexOf(f); return opt(idx, f.d, f.d===selectedDen); }).join('');
+}
+function onComarcaChange(val){
+  state.unit.comarca=val;
+  state.unit.nome=''; state.unit.endereco='';
+  document.getElementById('f-nome').value='';
+  document.getElementById('f-endereco').value='';
+  document.getElementById('autofill-note').style.display='none';
+  buildForumOptions(val,'');
+  updateProgress(); scheduleSave();
+  const list=FORUNS.filter(f=>f.m===val);
+  if(list.length===1){
+    const idx=FORUNS.indexOf(list[0]);
+    document.getElementById('f-nome-sel').value=String(idx);
+    onForumSelect(String(idx));
+  }
+}
+function onForumSelect(val){
+  if(val==='') return;
+  const rec=FORUNS[+val];
+  if(!rec) return;
+  applyForumRecord(rec);
+}
+function applyForumRecord(rec){
+  state.unit.nome=rec.d;
+  state.unit.endereco=rec.end;
+  document.getElementById('f-nome').value=rec.d;
+  document.getElementById('f-endereco').value=rec.end;
+  document.getElementById('autofill-note').style.display='block';
+  updateProgress(); scheduleSave();
+}
+
+['nome','endereco','juiz','secretario','data'].forEach(key=>{
   const el = document.getElementById('f-'+key);
   el.addEventListener('input', ()=>{
     state.unit[key] = el.value;
@@ -1085,7 +1142,10 @@ async function loadState(){
       state = Object.assign({unit:{},answers:{},photos:{},photoConfirmed:{}}, loaded);
     }
   }catch(e){ /* nothing saved yet */ }
-  ['comarca','nome','endereco','juiz','secretario','data'].forEach(key=>{
+  buildComarcaOptions();
+  buildForumOptions(state.unit.comarca||'', state.unit.nome||'');
+  document.getElementById('autofill-note').style.display = state.unit.nome ? 'block' : 'none';
+  ['nome','endereco','juiz','secretario','data'].forEach(key=>{
     document.getElementById('f-'+key).value = state.unit[key] || '';
   });
   if(!state.unit.servidoresList || !state.unit.servidoresList.length){
@@ -1101,7 +1161,9 @@ async function loadState(){
 async function confirmReset(){
   if(confirm('Iniciar nova visita? Os dados atuais serão substituídos (o histórico local não é apagado, mas esta tela será limpa).')){
     state = { unit:{comarca:'',nome:'',endereco:'',juiz:'',secretario:'',servidoresList:[''],data:''}, answers:{}, photos:{}, photoConfirmed:{} };
-    ['comarca','nome','endereco','juiz','secretario','data'].forEach(key=>{
+    buildComarcaOptions(); buildForumOptions('','');
+    document.getElementById('autofill-note').style.display='none';
+    ['nome','endereco','juiz','secretario','data'].forEach(key=>{
       document.getElementById('f-'+key).value = '';
     });
     renderServidoresList();
